@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 9bd1d1f5d1d79f94485c6bdbc909b72b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - Text_PopPreFab: {fileID: 8559044782776278639, guid: 2be3ad40ba49be84a89aae3e04510f13,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
