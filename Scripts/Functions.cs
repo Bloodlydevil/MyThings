@@ -7,11 +7,6 @@ namespace MyThings
     /// </summary>
     public static class Functions
     {
-        /// <summary>
-        /// the smallest value in game
-        /// </summary>
-        public static readonly float SmallNo = 0.00001f;
-
 
         /// <summary>
         /// it cuts the value if its out of range -> a will always be in the range (LowerLimit,UpperLimit)
@@ -138,26 +133,6 @@ namespace MyThings
         }
         #endregion
 
-
-        #region ValueChecker  -> it checks if the value is equal to another no.  ->  used for Float and double values to not get Float error
-
-
-        /// <summary>
-        /// it checks if the value is equal to another no.  ->  used for Float values to not get Float error
-        /// </summary>
-        /// <param name="no">value to check</param>
-        /// <param name="checker">value to check from</param>
-        /// <returns>if no is almost equal to checker</returns>
-        public static bool ValueChecker(float no, float checker)
-        {
-            return Math.Abs(no - checker) < SmallNo;
-        }
-        public static bool ValueChecker(double no, double checker)
-        {
-            return Math.Abs((float)(no - checker)) < SmallNo;
-        }
-
-        #endregion
 
         #region Motion
         public static float GetAcceleration( float FinalVelocity,float InitialVelocity,float Time)

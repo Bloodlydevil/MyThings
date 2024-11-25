@@ -8,7 +8,11 @@ namespace MyThings.ExtendableClass
     /// <typeparam name="type">The Componenet</typeparam>
     public class Singleton_D<type> :Singleton<type> where type : Component
     {
-        protected static bool Quit = false;
+        /// <summary>
+        /// If You Want TO Make It Of Dont Destroy On Load
+        ///<code>Default To True</code>
+        /// </summary>
+        protected virtual bool AddToDontDestroyOnLoad => true;
         /// <summary>
         /// Get The Instance And If Null Then Create New
         /// </summary>
@@ -16,20 +20,14 @@ namespace MyThings.ExtendableClass
         {
             get
             {
-                if(_instance == null && (!Quit))
-                    _instance = new GameObject().AddComponent<type>();
                 return _instance;
             } 
         }
         protected override void Awake()
         {
             base.Awake();
-            DontDestroyOnLoad(gameObject);
-        }
-        protected virtual void OnApplicationQuit()
-        {
-            Quit = true;
-            Destroy(gameObject);
+            if (AddToDontDestroyOnLoad)
+                DontDestroyOnLoad(gameObject);
         }
     }
 }

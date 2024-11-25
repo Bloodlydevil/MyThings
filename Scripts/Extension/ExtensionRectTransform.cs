@@ -1,3 +1,4 @@
+using MyThings.Window.Windows;
 using UnityEngine;
 
 
@@ -9,7 +10,12 @@ namespace MyThings.Extension
     /// </summary>
     public static class ExtensionRectTransform
     {
-        private static Vector2 GetAnchorMin(Anchors anchor)
+        /// <summary>
+        /// Get The Anchor Min Based On The Anchor
+        /// </summary>
+        /// <param name="anchor">The Anchor</param>
+        /// <returns>Vector2 Representing Anchor</returns>
+        public static Vector2 GetAnchorMin(Anchors anchor)
         {
             return anchor switch
             {
@@ -32,7 +38,12 @@ namespace MyThings.Extension
                 _ => new(0,0),
             };
         }
-        private static Vector2 GetAnchorMax(Anchors anchor)
+        /// <summary>
+        /// Get The Anchor Max Based On The Anchor
+        /// </summary>
+        /// <param name="anchor">The Anchor</param>
+        /// <returns>Vector2 Representing Anchor</returns>
+        public static Vector2 GetAnchorMax(Anchors anchor)
         {
             return anchor switch
             {
@@ -86,10 +97,20 @@ namespace MyThings.Extension
         {
             rectTransform.anchoredPosition = pos;
         }
+        /// <summary>
+        /// Set The Anchor Of The RectTransform
+        /// </summary>
+        /// <param name="rectTransform"></param>
+        /// <param name="anchor"></param>
         public static void SetAnchor(this RectTransform rectTransform,Anchors anchor)
         {
             rectTransform.anchorMax=GetAnchorMax(anchor);
             rectTransform.anchorMin=GetAnchorMin(anchor);
+        }
+        public static bool Contains(this RectTransform rectTransform,Vector2 point)
+        {
+            WindowObjectViewer.Create(rectTransform.rect);
+            return rectTransform.rect.Contains( point.Print());
         }
     }
     public enum Anchors

@@ -34,7 +34,7 @@ namespace MyThings.Job_System
             if (!JobPerforming)
             {
                 JobPerforming= true;
-                JobSystem.AddJob(this);
+                JobSystem.Instance.AddJob(this);
             }
         }
         public void Stop()
@@ -42,7 +42,7 @@ namespace MyThings.Job_System
             if (JobPerforming)
             {
                 JobPerforming = false;
-                JobSystem.RemoveJob(this);
+                JobSystem.Instance.RemoveJob(this);
             }
         }
 

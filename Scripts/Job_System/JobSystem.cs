@@ -1,4 +1,5 @@
 using MyThings.Data;
+using MyThings.ExtendableClass;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,33 +10,21 @@ namespace MyThings.Job_System
     /// The System To Manage The Jobs ( Usualy Used To Give Non Component Function Call Every Frame)
     /// </summary>
     [DefaultExecutionOrder(-2)]
-    public class JobSystem : MonoBehaviour
+    public class JobSystem : Singleton_C<JobSystem>
     {
         /// <summary>
         /// The Total Jobs Running
         /// </summary>
         [SerializeField] private int TotalJobs;
 
-        #region Statics
-
 
         /// <summary>
         /// The Current Active Jobs
         /// </summary>
-        private static ListD<IJob> ActiveJobs;
-
-
-
-        #endregion
+        private ListD<IJob> ActiveJobs=new ListD<IJob>();
 
 
         #region Unity Functions
-
-
-        private void Awake()
-        {
-            ActiveJobs = new ListD<IJob>();
-        }
         private void Update()
         {
             ActiveJobs.SyncRemove();
@@ -45,10 +34,6 @@ namespace MyThings.Job_System
                 IJob job = ActiveJobs.L[i];
                 job.Perform(job.TimeScaled ? Time.deltaTime : Time.unscaledDeltaTime);
             }
-        }
-        private void OnDestroy()
-        {
-            ActiveJobs.L.Clear();
         }
 
 
@@ -78,7 +63,7 @@ namespace MyThings.Job_System
         /// Add Job To The Active Jobs ( Considers The Job Is Not Already Added )
         /// </summary>
         /// <param name="job">The Job</param>
-        public static void AddJob(IJob job)
+        public void AddJob(IJob job)
         {
             ActiveJobs.Add(job);
         }
@@ -88,7 +73,7 @@ namespace MyThings.Job_System
         /// Add Job To The Remove Jobs ( Considers The Job Is Not Already Added )
         /// </summary>
         /// <param name="job">The Job</param>
-        public static void RemoveJob(IJob job)
+        public void RemoveJob(IJob job)
         {
             ActiveJobs.Remove(job);
         }

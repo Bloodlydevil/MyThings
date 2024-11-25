@@ -1,4 +1,6 @@
+using MyThings.Extension;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace MyThings.ExtendableClass
 {
@@ -10,18 +12,11 @@ namespace MyThings.ExtendableClass
     /// <typeparam name="type">The Type Of The Extender</typeparam>
     public class Singleton<type> : MonoBehaviour where type : Component
     {
-        /// <summary>
-        /// The Instance Which Follows Singleton Pattern
-        /// </summary>
         protected static type _instance;
         /// <summary>
         /// If The Instance Is Created Or Not
         /// </summary>
         public static bool HasInstance => _instance != null;
-        /// <summary>
-        /// Try To Get The Instance
-        /// </summary>
-        public static type TryGetInstance => HasInstance ? _instance : null;
         /// <summary>
         /// Instance Of The Class Which Follows Singleton Pattern
         /// </summary>
@@ -35,17 +30,21 @@ namespace MyThings.ExtendableClass
                 return;
             if (_instance != null)
             {
-                Debug.LogError("Atempting To Create 2 Singleton");
+                Debug.LogWarning("Atempting To Create 2 Singleton");
                 Destroy(gameObject);
+                return;
             }
             _instance = this as type;
         }
         /// <summary>
-        /// Use Base.OnDestroy When Overiding
+        /// Try To Get The Instance
         /// </summary>
-        protected virtual void OnDestroy()
+        /// <param name="instance">The instance</param>
+        /// <returns>If instance exist</returns>
+        public bool TryGetInstance(out type instance)
         {
-            _instance = null;
+            instance = _instance;
+            return HasInstance;
         }
     }
 }

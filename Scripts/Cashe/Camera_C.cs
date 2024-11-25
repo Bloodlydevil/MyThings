@@ -16,7 +16,14 @@ namespace MyThings.Cashe
         /// <summary>
         /// The Current Camera
         /// </summary>
-        public Camera Camera=>m_camera;
+        public Camera Camera {
+            get
+            {
+                if(m_camera == null)
+                    m_camera = Camera.main;
+                return m_camera;
+            }
+        }
 
 
         /// <summary>
@@ -37,8 +44,7 @@ namespace MyThings.Cashe
         protected override void Awake()
         {
             base.Awake();
-            m_camera=Camera.main;
-            m_up.Call(i => i?.Invoke(m_camera), i => i(m_camera));
+            m_up.Call(i => i?.Invoke(Camera), i => i(Camera));
         }
 
         public void ReCacheCamera(Camera camera)

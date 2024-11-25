@@ -9,7 +9,7 @@ namespace MyThings.Window.Windows
         public static WindowBasic Create(object obj, string Name = null)
         {
             var window = WindowCreate.Create(WindowOverLap);
-            window.SetUp(ProperDrag.Mode.ScreenOverlay);
+            window.SetUp(WindowMode.ScreenSpace_OverLay);
             window.Title = Name ?? obj.ToString();
             ((OVWindowHelper)window.Helper).SetUp(obj);
             window.gameObject.SetActive(true);

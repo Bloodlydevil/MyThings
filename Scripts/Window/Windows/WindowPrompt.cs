@@ -16,7 +16,7 @@ namespace MyThings.Window.Windows
         /// <param name="OnReject">the Function To Call When User Clicks Cross</param>
         /// <param name="WindowName">The Full Window Name In Resource Folder</param>
         /// <returns>The GameObject</returns>
-        public static GameObject Create(string text, UnityAction OnAccept, UnityAction OnReject,string WindowName,ProperDrag.Mode mode)
+        public static GameObject Create(string text, UnityAction OnAccept, UnityAction OnReject,string WindowName, WindowMode mode)
         {
             WindowBasic obj;
             obj = WindowCreate.Create(WindowName);
@@ -39,7 +39,7 @@ namespace MyThings.Window.Windows
         /// <returns>The GameObject</returns>
         public static GameObject CreateWorldSpace(string text, UnityAction OnAccept, UnityAction OnReject)
         {
-            return Create(text, OnAccept, OnReject, WindowWorldSpace,ProperDrag.Mode.WorldView);
+            return Create(text, OnAccept, OnReject, WindowWorldSpace, WindowMode.WorldSpace);
         }
         /// <summary>
         /// Create A Basic OverLay Prompt
@@ -50,7 +50,7 @@ namespace MyThings.Window.Windows
         /// <returns>The GameObject</returns>
         public static GameObject CreateOverLayScreen(string text, UnityAction OnAccept, UnityAction OnReject)
         {
-            return Create(text, OnAccept, OnReject, WindowOverLayScreen, ProperDrag.Mode.ScreenOverlay);
+            return Create(text, OnAccept, OnReject, WindowOverLayScreen, WindowMode.ScreenSpace_OverLay);
         }
     }
 }

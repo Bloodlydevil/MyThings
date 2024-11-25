@@ -63,6 +63,14 @@ namespace MyThings.Job_System
         /// The TimeScale Of The Change
         /// </summary>
         public bool TimeScale { get => _Job.TimeScaled;set=> _Job.TimeScaled = value; }
+
+
+        /// <summary>
+        /// If The Change Is Running
+        /// </summary>
+        /// <returns>Change Running</returns>
+        public bool IsRunning => _Job.Running;
+
         #endregion
 
 
@@ -205,14 +213,6 @@ namespace MyThings.Job_System
         /// </summary>
         /// <param name="action">The Function To Set On end</param>
         public void SetOnEnd(Action action) => _OnEnd = action;
-
-
-        /// <summary>
-        /// If The Change Is Running
-        /// </summary>
-        /// <returns>Change Running</returns>
-        public bool IsRunning() => _Job.Running;
-
 
         #endregion
     }

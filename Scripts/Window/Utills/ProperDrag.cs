@@ -12,16 +12,11 @@ namespace MyThings.Window.Utills
     /// </summary>
     public class ProperDrag :MonoBehaviour, IDragHandler, IBeginDragHandler
     {
-        public enum Mode
-        {
-            WorldView,
-            ScreenOverlay
-        }
         private List<RectTransform> m_NoDragZone=new List<RectTransform>();// The No Drag Zones
         private Vector3 m_Correction;//the correction to add to drag position
         private Camera m_Camera;// camera used
         private bool m_NoDrag;// If The Begain Is In No Drag Area Then Do Not Allow Drag
-        private Mode m_Mode;
+        private WindowMode m_Mode;
 
         private void Start()
         {
@@ -44,10 +39,11 @@ namespace MyThings.Window.Utills
             if (m_NoDrag) return;
             switch(m_Mode)
             {
-                case Mode.WorldView:
+                case WindowMode.WorldSpace:
                     transform.position = m_Correction + m_Camera.ScreenToWorldPoint(eventData.position.ToVector3(10));
                     break;
-                case Mode.ScreenOverlay:
+                case WindowMode.ScreenSpace_OverLay:
+                case WindowMode.ScreenSpace_Camera:
                     transform.position = m_Correction + eventData.position.ToVector3(0);
                     break;
             }
@@ -58,7 +54,7 @@ namespace MyThings.Window.Utills
         {
             m_NoDrag = false;
             Vector3 pos= eventData.position.ToVector3(10);
-            if(m_Mode == Mode.WorldView)
+            if(m_Mode == WindowMode.WorldSpace)
             {
                 pos= m_Camera.ScreenToWorldPoint(pos);
             }
@@ -87,7 +83,7 @@ namespace MyThings.Window.Utills
         /// Attach this dragable class to the gameobject
         /// </summary>
         /// <param name="objec">the gameobject to attach to</param>
-        public static ProperDrag Attach(GameObject objec,Mode mode)
+        public static ProperDrag Attach(GameObject objec, WindowMode mode)
         {
             var temp = objec.AddComponent<ProperDrag>();
             temp.m_Mode = mode;

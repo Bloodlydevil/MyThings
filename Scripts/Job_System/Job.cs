@@ -8,12 +8,10 @@ namespace MyThings.Job_System
     /// </summary>
     public class Job: IJob
     {
-        
-        private bool m_TimeScaled;
-        private Action<float> ToPerForm;
+        public Action<float> ToPerForm {  get; set; }
         private bool JobPerforming;
         public bool Running { get => JobPerforming; }
-        public bool TimeScaled { get => m_TimeScaled; set => m_TimeScaled = value; }
+        public bool TimeScaled { get; set; }
 
         /// <summary>
         /// Constructor To Create A Job
@@ -23,17 +21,20 @@ namespace MyThings.Job_System
         public Job(Action<float> action, bool Time)
         {
             ToPerForm = action;
-            m_TimeScaled = Time;
+            TimeScaled = Time;
             JobPerforming = false;
         }
+        public Job()
+        {
 
+        }
         #region Public
         public void Start()
         {
             if (!JobPerforming)
             {
                 JobPerforming= true;
-                JobSystem.AddJob(this);
+                JobSystem.Instance.AddJob(this);
             }
         }
         
@@ -42,7 +43,7 @@ namespace MyThings.Job_System
             if (JobPerforming)
             {
                 JobPerforming = false;
-                JobSystem.RemoveJob(this);
+                JobSystem.Instance.RemoveJob(this);
             }
         }
 

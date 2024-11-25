@@ -9,7 +9,7 @@ namespace MyThings.FPS
     public class FPSShower : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI m_text;
-        [SerializeField] private float m_fps;
+        [SerializeField] private float RefreshRate;
         [SerializeField] private bool m_enabled;
         [SerializeField] private bool m_DontDestroyOnLoad;
         private void Start()
@@ -21,7 +21,7 @@ namespace MyThings.FPS
             }
             if(m_DontDestroyOnLoad)
                 DontDestroyOnLoad(gameObject);
-            TimerManager.Create(1/m_fps, () => m_text.text= FPS.FPS_string, true).Start();
+            TimerManager.Create(RefreshRate, () => m_text.text= FPS.FPS_string, true).Start();
         }
     }
 }

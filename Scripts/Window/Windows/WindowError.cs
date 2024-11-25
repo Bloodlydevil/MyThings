@@ -11,7 +11,7 @@ namespace MyThings.Window.Windows
     {
         private const string WindowWorldSpace = "PreFabs/Windows/ErrorWindow";
         private const string WindowOverLay = "PreFabs/Windows/ErrorWindowOverLay";
-        private WindowBasic Window;
+        public WindowMode CorrentMode { get; set; } = WindowMode.ScreenSpace_OverLay;
         private void Start()
         {
             
@@ -25,9 +25,24 @@ namespace MyThings.Window.Windows
         {
             if (type == LogType.Error||type==LogType.Exception||type==LogType.Warning)
             {
-                if (Window == null)
-                    Window = WindowCreate.Create(WindowWorldSpace);
-                ((ErrorWindowHelper)Window.Helper).TextMeshProUGUI.text = stackTrace;
+                WindowBasic Window=null;
+                switch(CorrentMode)
+                {
+                    case WindowMode.WorldSpace:
+                        Window = WindowCreate.Create(WindowWorldSpace);
+                        Window.SetUp(WindowMode.WorldSpace);
+                        break;
+                    case WindowMode.ScreenSpace_OverLay:
+                    case WindowMode.ScreenSpace_Camera:
+                        Window = WindowCreate.Create(WindowOverLay);
+                        Window.SetUp(WindowMode.ScreenSpace_OverLay);
+                        break;
+                }
+                
+                if (Window.Helper is ErrorWindowHelper helper)
+                {
+                    helper.TextMeshProUGUI.text = stackTrace;
+                }
                 Window.gameObject.SetActive(true);
             }
         }
@@ -37,7 +52,7 @@ namespace MyThings.Window.Windows
         /// <param name="text">The Text To Show</param>
         /// <param name="WindowName">The WindowName(Full Location In Resourse Folder)</param>
         /// <returns>The Main GameObject</returns>
-        public static GameObject Create(string text,string WindowName,ProperDrag.Mode mode)
+        public static GameObject Create(string text,string WindowName, WindowMode mode)
         {
             WindowBasic Window=WindowCreate.Create(WindowName);
             Window.SetUp(mode);
@@ -52,7 +67,7 @@ namespace MyThings.Window.Windows
         /// <returns>The Object</returns>
         public static GameObject CreateWorldSpace(string text)
         {
-            return Create(text, WindowWorldSpace,ProperDrag.Mode.WorldView);
+            return Create(text, WindowWorldSpace, WindowMode.WorldSpace);
         }
         /// <summary>
         /// Create Overlay Error
@@ -61,7 +76,7 @@ namespace MyThings.Window.Windows
         /// <returns>The GameObject</returns>
         public static GameObject CreateOverLay(string text)
         {
-            return Create(text, WindowOverLay, ProperDrag.Mode.ScreenOverlay);
+            return Create(text, WindowOverLay, WindowMode.ScreenSpace_OverLay);
         }
     }
 }
