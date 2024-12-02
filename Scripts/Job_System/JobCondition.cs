@@ -2,58 +2,63 @@ using System;
 
 namespace MyThings.Job_System
 {
-
-    /// <summary>
-    /// The Job To Perform Till It Results In True
-    /// </summary>
-    public class JobCondition: IJob
+    public partial class JobSystem 
     {
-        
-        private bool m_TimeScaled;
-        private Func<float,bool> ToPerForm;
-        private bool JobPerforming;
-        public bool Running { get => JobPerforming; }
-        public bool TimeScaled { get => m_TimeScaled; set => m_TimeScaled = value; }
-
         /// <summary>
-        /// Constructor To Create A Job
+        /// The Job To Perform Till It Results In True
         /// </summary>
-        /// <param name="action">The Function To Call The Job</param>
-        /// <param name="Time">If THe Time IS Scaled Or Not</param>
-        public JobCondition(Func<float, bool> action, bool Time)
+        public class JobCondition : IJob
         {
-            ToPerForm = action;
-            m_TimeScaled = Time;
-            JobPerforming = false;
-        }
 
-        #region Public
+            private Func<float, bool> ToPerForm;
+            private bool JobPerforming;
+            private bool m_FixedUpdate;
+            public bool Running { get => JobPerforming; }
+            public bool TimeScaled { get; set; }
 
-        public void Start()
-        {
-            if (!JobPerforming)
+            public bool FixedUpdate => m_FixedUpdate;
+
+            /// <summary>
+            /// Constructor To Create A Job
+            /// </summary>
+            /// <param name="action">The Function To Call The Job</param>
+            /// <param name="Time">If THe Time IS Scaled Or Not</param>
+            public JobCondition(Func<float, bool> action, bool Time, bool FixedUpdate = false)
             {
-                JobPerforming= true;
-                JobSystem.Instance.AddJob(this);
-            }
-        }
-        public void Stop()
-        {
-            if (JobPerforming)
-            {
+                ToPerForm = action;
+                TimeScaled = Time;
                 JobPerforming = false;
-                JobSystem.Instance.RemoveJob(this);
+                m_FixedUpdate = FixedUpdate;
             }
-        }
 
-        public void Perform(float Time)
-        {
-            if(ToPerForm(Time))
+            #region Public
+
+            public void Start()
             {
-                Stop();
+                if (!JobPerforming)
+                {
+                    JobPerforming = true;
+                    Instance.AddJob(this);
+                }
             }
-        }
+            public void Stop()
+            {
+                if (JobPerforming)
+                {
+                    JobPerforming = false;
+                    Instance.RemoveJob(this);
+                }
+            }
 
-        #endregion
+            public void Perform(float Time)
+            {
+                if (ToPerForm(Time))
+                {
+                    Stop();
+                }
+            }
+
+            #endregion
+        }
     }
 }

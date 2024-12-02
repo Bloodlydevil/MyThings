@@ -9,12 +9,6 @@ namespace MyThings.Extension
 {
     public static class ExtensionVector
     {
-        public enum asd
-        {
-            X,
-            Y,
-            Z
-        }
         /// <summary>
         /// Make A Vector2 To Vector3
         /// </summary>

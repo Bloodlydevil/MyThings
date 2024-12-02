@@ -1,5 +1,6 @@
 using MyThings.Data;
 using MyThings.ExtendableClass;
+using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,32 +11,41 @@ namespace MyThings.Job_System
     /// The System To Manage The Jobs ( Usualy Used To Give Non Component Function Call Every Frame)
     /// </summary>
     [DefaultExecutionOrder(-2)]
-    public class JobSystem : Singleton_C<JobSystem>
+    public partial class JobSystem : Singleton_C<JobSystem>
     {
         /// <summary>
         /// The Total Jobs Running
         /// </summary>
-        [SerializeField] private int TotalJobs;
-
+        [SerializeField, ReadOnly] private int TotalUpdateJobs;
+        [SerializeField, ReadOnly] private int TotalFixedUpdateJobs;
 
         /// <summary>
         /// The Current Active Jobs
         /// </summary>
-        private ListD<IJob> ActiveJobs=new ListD<IJob>();
-
+        private ListD<IJob> ActiveUpdateJobs=new ListD<IJob>();
+        private ListD<IJob> ActiveFixedUpdateJobs=new ListD<IJob>();
 
         #region Unity Functions
         private void Update()
         {
-            ActiveJobs.SyncRemove();
-            TotalJobs = ActiveJobs.L.Count;
-            for (int i = 0; i < TotalJobs; i++)
+            ActiveUpdateJobs.SyncRemove();
+            TotalUpdateJobs = ActiveUpdateJobs.L.Count;
+            for (int i = 0; i < TotalUpdateJobs; i++)
             {
-                IJob job = ActiveJobs.L[i];
+                IJob job = ActiveUpdateJobs.L[i];
                 job.Perform(job.TimeScaled ? Time.deltaTime : Time.unscaledDeltaTime);
             }
         }
-
+        private void FixedUpdate()
+        {
+            ActiveFixedUpdateJobs.SyncRemove();
+            TotalFixedUpdateJobs = ActiveFixedUpdateJobs.L.Count;
+            for (int i = 0; i < TotalFixedUpdateJobs; i++)
+            {
+                IJob job = ActiveFixedUpdateJobs.L[i];
+                job.Perform(job.TimeScaled ? Time.deltaTime : Time.unscaledDeltaTime);
+            }
+        }
 
         #endregion
 
@@ -65,7 +75,10 @@ namespace MyThings.Job_System
         /// <param name="job">The Job</param>
         public void AddJob(IJob job)
         {
-            ActiveJobs.Add(job);
+            if (job.FixedUpdate)
+                ActiveFixedUpdateJobs.Add(job);
+            else
+                ActiveUpdateJobs.Add(job);
         }
 
 
@@ -75,7 +88,10 @@ namespace MyThings.Job_System
         /// <param name="job">The Job</param>
         public void RemoveJob(IJob job)
         {
-            ActiveJobs.Remove(job);
+            if (job.FixedUpdate)
+                ActiveFixedUpdateJobs.Remove(job);
+            else
+                ActiveUpdateJobs.Remove(job);
         }
 
 

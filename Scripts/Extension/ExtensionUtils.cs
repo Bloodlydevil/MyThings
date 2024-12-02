@@ -10,5 +10,9 @@ namespace MyThings.Extension
                 toPerform(obj);
             return obj;
         }
+        public static bool IsInside(this float Point,float RangeLeft,float RangeRight)
+        {
+            return Point>=RangeLeft && Point<=RangeRight;
+        }
     }
 }

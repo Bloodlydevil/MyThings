@@ -13,6 +13,10 @@ namespace MyThings.Job_System
         /// </summary>
         public bool Running { get; }
         /// <summary>
+        /// If The Job Is Run On Fixed Update
+        /// </summary>
+        public bool FixedUpdate { get; }
+        /// <summary>
         /// Perform one iteration of job with the given time
         /// </summary>
         /// <param name="Time"></param>
