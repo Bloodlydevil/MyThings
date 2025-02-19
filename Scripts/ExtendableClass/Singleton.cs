@@ -41,7 +41,7 @@ namespace MyThings.ExtendableClass
         /// </summary>
         /// <param name="instance">The instance</param>
         /// <returns>If instance exist</returns>
-        public bool TryGetInstance(out type instance)
+        public static bool TryGetInstance(out type instance)
         {
             instance = _instance;
             return HasInstance;

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -103,6 +104,18 @@ namespace MyThings.Extension
                 }
             }
             return null;
+        }
+        /// <summary>
+        /// A Helper Funtion To Run Any Code For Each Child Of The Transform
+        /// </summary>
+        /// <param name="transform">The Transform To Run On</param>
+        /// <param name="action">The Function To Perform</param>
+        public static void ForEachChild(this Transform transform, Action<Transform> action)
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                action(transform.GetChild(i));
+            }
         }
     }
 }

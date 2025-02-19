@@ -1,5 +1,4 @@
-﻿using MyThings.Extension;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.IO;
 using UnityEngine;
@@ -18,6 +17,11 @@ namespace MyThings.SaveSystem
             path = Application.persistentDataPath + "/" + path;
             path.CreateDirectoryIfNot();
             File.WriteAllText(path,JsonConvert.SerializeObject(obj));
+        }
+        public static void SaveDataCompleteJson(this object obj, string CompletePath)
+        {
+            CompletePath.CreateDirectoryIfNot();
+            File.WriteAllText(CompletePath, JsonConvert.SerializeObject(obj));
         }
         /// <summary>
         /// Load The Json Data Present At The Path
@@ -43,13 +47,31 @@ namespace MyThings.SaveSystem
             return new LoadedData<type>(default, true, path);
             
         }
+        public static LoadedData<type> LoadDataJsonPrePath<type>(this string CompletePath)
+        {
+            if (File.Exists(CompletePath))
+            {
+                string data = File.ReadAllText(CompletePath);
+                try
+                {
+                    return new LoadedData<type>(JsonConvert.DeserializeObject<type>(data), false, CompletePath);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    return new LoadedData<type>(data, false, CompletePath);
+                }
+            }
+            return new LoadedData<type>(default, true, CompletePath);
+
+        }
         /// <summary>
-        /// Dalete The File
+        /// Delete The File
         /// </summary>
         /// <param name="path">The File Path</param>
-        public static void DeleteDataJson(this string path)
+        public static void DeleteData(this string path)
         {
-            File.Delete(Application.persistentDataPath + "/" + path);
+            SaverAndLoader.DeleteData(path);
         }
     }
 }

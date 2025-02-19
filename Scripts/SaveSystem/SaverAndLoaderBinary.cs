@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using MyThings.Reflections;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 
@@ -20,34 +21,53 @@ namespace MyThings.SaveSystem
             formatter.Serialize(stream, obj);
             stream.Close();
         }
-
+        public static void SaveDataCompleteBinary(this object obj,string CompletePath)
+        {
+            CompletePath.CreateDirectoryIfNot();
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(CompletePath, FileMode.Create);
+            formatter.Serialize(stream, obj);
+            stream.Close();
+        }
         /// <summary>
         /// Load Data From The File--> Data Must Be Stored In Binary
         /// </summary>
-        /// <param name="path">The File </param>
+        /// <param name="CompletePath">The File </param>
         /// <typeparam name="type">The Type Of Object To Return</typeparam>
         /// <returns>The Data</returns>
-        public static LoadedData<type> LoadDataBinary<type>(this string path)
+        public static LoadedData<type> LoadDataBinary<type>(this string CompletePath)
         {
-            var newpath = Application.persistentDataPath + "/" + path;
+            var newpath = Application.persistentDataPath + "/" + CompletePath;
             if (File.Exists(newpath))
             {
                 BinaryFormatter formatter = new BinaryFormatter();
                 FileStream stream = new FileStream(newpath, FileMode.Open);
-                LoadedData<type> obj = new LoadedData<type>(formatter.Deserialize(stream), false, path);
+                LoadedData<type> obj = new LoadedData<type>(formatter.Deserialize(stream), false, CompletePath);
                 stream.Close();
                 return obj;
             }
-            return new LoadedData<type>(default, true, path);
+            return new LoadedData<type>(default, true, CompletePath);
 
+        }
+        public static LoadedData<type> LoadDataBinaryPrePath<type>(this string CompletePath)
+        {
+            if (File.Exists(CompletePath))
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                FileStream stream = new FileStream(CompletePath, FileMode.Open);
+                LoadedData<type> obj = new LoadedData<type>(formatter.Deserialize(stream), false, CompletePath);
+                stream.Close();
+                return obj;
+            }
+            return new LoadedData<type>(default, true, CompletePath);
         }
         /// <summary>
         /// Dalete The File
         /// </summary>
         /// <param name="path">The File Path</param>
-        public static void DeleteDataBinary(this string path)
+        public static void DeleteData(this string path)
         {
-            File.Delete(Application.persistentDataPath + "/" + path);
+            SaverAndLoader.DeleteData(path);
         }
     }
 }

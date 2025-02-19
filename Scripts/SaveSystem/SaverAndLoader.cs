@@ -1,6 +1,6 @@
-
+using System;
 using System.IO;
-using Unity.VisualScripting;
+using UnityEngine;
 
 namespace MyThings.SaveSystem
 {
@@ -9,26 +9,28 @@ namespace MyThings.SaveSystem
     /// </summary>
     public static class SaverAndLoader
     {
-        // able to save data async
         /// <summary>
         /// The Type Of Save Available
         /// </summary>
         public enum SaveType
         {
             Binary,
-            JSON
+            JSON,
         }
-        private static SaveType m_SaveTypeToUse = SaveType.Binary;
+        public enum SaveMethod
+        {
+            Normal,
+            Thread
+        }
         /// <summary>
-        /// Get The Current Save Format Used
+        /// The Save Type Being Used
         /// </summary>
         /// <returns>The Save Format</returns>
-        public static SaveType GetFormat() => m_SaveTypeToUse;
+        public static SaveType SaveTypeUsing { get; set; } = SaveType.Binary;
         /// <summary>
-        /// Set The Current Save Formatt
+        /// The Save Method Being Used
         /// </summary>
-        /// <param name="type">The Type Of Save Format</param>
-        public static void SetFormat(SaveType type)=>m_SaveTypeToUse=type;
+        public static SaveMethod SaveMethodUsing { get; set; } = SaveMethod.Normal;
         /// <summary>
         /// Save The Data Based On The Format Set
         /// </summary>
@@ -36,7 +38,16 @@ namespace MyThings.SaveSystem
         /// <param name="path">The Path Of The Object </param>
         public static void SaveData(this object obj,string path)
         {
-            SaveData(obj, path, m_SaveTypeToUse);
+            SaveData(obj, path, SaveTypeUsing, SaveMethodUsing);
+        }
+        /// <summary>
+        /// Save The Data Based On The Format Set
+        /// </summary>
+        /// <param name="obj">The Object To Save</param>
+        /// <param name="path">The Path Of The Object </param>
+        public static void SaveData(this object obj, string path,SaveMethod method)
+        {
+            SaveData(obj, path, SaveTypeUsing, method);
         }
         /// <summary>
         ///  Save The Data Based On The Format Set
@@ -44,8 +55,14 @@ namespace MyThings.SaveSystem
         /// <param name="obj">The Object To Save</param>
         /// <param name="path">The Path Of The Object </param>
         /// <param name="type">The Type To Use To Store</param>
-        public static void SaveData(this object obj, string path, SaveType type)
+        public static void SaveData(this object obj, string path, SaveType type,SaveMethod method)
         {
+            if(method==SaveMethod.Thread)
+            {
+                path = GetThreadSafePath(path);
+                SaverAndLoaderThreaded.SaveDataThreaded(GetSaveAsyncDataAction(obj, path, type));
+                return;
+            }
             switch (type)
             {
                 case SaveType.Binary:
@@ -57,44 +74,121 @@ namespace MyThings.SaveSystem
             }
         }
         /// <summary>
-        /// Load The Object BAsed On The Format
+        /// Load The Object Based On The Format
         /// </summary>
         /// <typeparam name="type">The Type In Which To Get Object</typeparam>
         /// <param name="path">The Path Of The Object</param>
         /// <returns>The Data</returns>
         public static LoadedData<type> LoadData<type>(this string path)
         {
-            return m_SaveTypeToUse switch
+            return LoadData<type>(path, SaveTypeUsing);
+        }
+        /// <summary>
+        /// Load The Data Using The Type Given Path
+        /// </summary>
+        /// <typeparam name="type"></typeparam>
+        /// <param name="path"></param>
+        /// <param name="saveType"></param>
+        /// <returns></returns>
+        public static LoadedData<type> LoadData<type>(this string path,SaveType saveType)
+        {
+            return saveType switch
             {
                 SaveType.Binary => SaverAndLoaderBinary.LoadDataBinary<type>(path),
-                SaveType.JSON=>SaverAndLoaderJson.LoadDataJson<type>(path),
-                _=>default
+                SaveType.JSON => SaverAndLoaderJson.LoadDataJson<type>(path),
+                _ => default
             };
         }
         /// <summary>
-        /// Dalete The File
+        /// Load The Data Using The Type Given Path (No Unity Functions Are Used)
         /// </summary>
-        /// <param name="path">The File Path</param>
-        /// <param name="type">The Type Of The File</param>
-        public static void DeleteData(this string path, SaveType type)
+        /// <typeparam name="type">The Type Of Data To Load</typeparam>
+        /// <param name="CompletePath">The Complete Path Of The Data</param>
+        /// <param name="saveType"></param>
+        /// <returns></returns>
+        public static LoadedData<type> LoadAsyncData<type>(this string CompletePath, SaveType saveType)
         {
-            switch (type)
+            return saveType switch
             {
-                case SaveType.Binary:
-                    SaverAndLoaderBinary.DeleteDataBinary( path);
-                    break;
-                case SaveType.JSON:
-                    SaverAndLoaderJson.DeleteDataJson( path);
-                    break;
-            }
+                SaveType.Binary => SaverAndLoaderBinary.LoadDataBinaryPrePath<type>(CompletePath),
+                SaveType.JSON => SaverAndLoaderJson.LoadDataJsonPrePath<type>(CompletePath),
+                _ => default
+            };
         }
         /// <summary>
-        /// Dalete The File
+        /// Load The Data Using A Thread 
+        /// </summary>
+        /// <typeparam name="type">The Type of Data To Load</typeparam>
+        /// <param name="path">The Path From Which To Load</param>
+        /// <param name="ValueReciever">THe Function To Feed </param>
+        /// <param name="saveType">The Save Type Used</param>
+        public static void LoadData<type>(this string path,Action<LoadedData<type>> ValueReciever,SaveType saveType)
+        {
+            SaverAndLoaderThreaded.LoadDataThreaded(path, ValueReciever, saveType);
+        }
+        /// <summary>
+        /// Delete The File
         /// </summary>
         /// <param name="path">The File Path</param>
         public static void DeleteData(this string path)
         {
-            DeleteData(path, m_SaveTypeToUse);
+            File.Delete(Application.persistentDataPath + "/" + path);
+        }
+        /// <summary>
+        /// Get The Function To Use As A Saver (Threaded Version Is Not Given)
+        /// </summary>
+        /// <param name="obj">The Object To Save</param>
+        /// <param name="path">The Path Of The Saved Object</param>
+        /// <param name="saveType">The Save type Used</param>
+        /// <returns>The Action Function To Call Save Method</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static Action GetSaveDataAction(this object obj, string path, SaveType saveType)
+        {
+            return saveType switch
+            {
+                SaveType.Binary => () =>  obj.SaveDataBinary(path),
+                SaveType.JSON => () => obj.SaveDataJson(path),
+                _ => throw new NotImplementedException(),
+            };
+        }
+        /// <summary>
+        /// Get The Function To Use As A Saver (Threaded Version Is Not Given)(No Unity Functions Are Used)
+        /// </summary>
+        /// <param name="obj">The Object To Save</param>
+        /// <param name="CompletePath">The Complete Path Of The Object</param>
+        /// <param name="saveType">The Save type Used</param>
+        /// <returns>The Action Function To Call Save Method</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public static Action GetSaveAsyncDataAction(this object obj, string CompletePath, SaveType saveType)
+        {
+            return saveType switch
+            {
+                SaveType.Binary => () => obj.SaveDataCompleteBinary(CompletePath),
+                SaveType.JSON => () => obj.SaveDataCompleteJson(CompletePath),
+                _ => throw new NotImplementedException(),
+            };
+        }
+        /// <summary>
+        /// Get The Thread Safe File Location (Must Be USed From Safe Thread)
+        /// </summary>
+        /// <param name="FileLocation">The File Location</param>
+        /// <returns>The Currect File Location</returns>
+        public static string GetThreadSafePath(this string FileLocation)
+        {
+            return FileLocation.PersistancePath();
+        }
+        public static bool TryRenameFile(this string OldName, string NewName)
+        {
+            try
+            {
+                File.Move(OldName, NewName);
+            }
+            catch (Exception ex)
+            {
+                Debug.Log(ex);
+                return false;
+            }
+            return true;
         }
     }
 }

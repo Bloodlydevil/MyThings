@@ -35,9 +35,13 @@ namespace MyThings.SaveSystem
                 }
             }
         }
-        public void SaveDefault( SaverAndLoader.SaveType type)
+        public void SaveDefault( SaverAndLoader.SaveType type,SaverAndLoader.SaveMethod Method)
         {
-            default(T).SaveData(Path, type);
+            default(T).SaveData(Path, type, Method);
+        }
+        public void SaveDefault( SaverAndLoader.SaveMethod Method)
+        {
+            default(T).SaveData(Path, Method);
         }
     }
 }
