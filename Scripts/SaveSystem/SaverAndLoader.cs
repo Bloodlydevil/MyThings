@@ -17,20 +17,11 @@ namespace MyThings.SaveSystem
             Binary,
             JSON,
         }
-        public enum SaveMethod
-        {
-            Normal,
-            Thread
-        }
         /// <summary>
         /// The Save Type Being Used
         /// </summary>
         /// <returns>The Save Format</returns>
         public static SaveType SaveTypeUsing { get; set; } = SaveType.Binary;
-        /// <summary>
-        /// The Save Method Being Used
-        /// </summary>
-        public static SaveMethod SaveMethodUsing { get; set; } = SaveMethod.Normal;
         /// <summary>
         /// Save The Data Based On The Format Set
         /// </summary>
@@ -38,16 +29,7 @@ namespace MyThings.SaveSystem
         /// <param name="path">The Path Of The Object </param>
         public static void SaveData(this object obj,string path)
         {
-            SaveData(obj, path, SaveTypeUsing, SaveMethodUsing);
-        }
-        /// <summary>
-        /// Save The Data Based On The Format Set
-        /// </summary>
-        /// <param name="obj">The Object To Save</param>
-        /// <param name="path">The Path Of The Object </param>
-        public static void SaveData(this object obj, string path,SaveMethod method)
-        {
-            SaveData(obj, path, SaveTypeUsing, method);
+            SaveData(obj, path, SaveTypeUsing);
         }
         /// <summary>
         ///  Save The Data Based On The Format Set
@@ -55,14 +37,8 @@ namespace MyThings.SaveSystem
         /// <param name="obj">The Object To Save</param>
         /// <param name="path">The Path Of The Object </param>
         /// <param name="type">The Type To Use To Store</param>
-        public static void SaveData(this object obj, string path, SaveType type,SaveMethod method)
+        public static void SaveData(this object obj, string path, SaveType type)
         {
-            if(method==SaveMethod.Thread)
-            {
-                path = GetThreadSafePath(path);
-                SaverAndLoaderThreaded.SaveDataThreaded(GetSaveAsyncDataAction(obj, path, type));
-                return;
-            }
             switch (type)
             {
                 case SaveType.Binary:
@@ -122,9 +98,9 @@ namespace MyThings.SaveSystem
         /// <param name="path">The Path From Which To Load</param>
         /// <param name="ValueReciever">THe Function To Feed </param>
         /// <param name="saveType">The Save Type Used</param>
-        public static void LoadData<type>(this string path,Action<LoadedData<type>> ValueReciever,SaveType saveType)
+        public static void LoadData<type>(this string path,SaveType saveType, Action<LoadedData<type>> ValueReciever,Action<Exception> ErrorHandler)
         {
-            SaverAndLoaderThreaded.LoadDataThreaded(path, ValueReciever, saveType);
+            SaverAndLoaderThreaded.LoadDataThreaded(path, saveType, ValueReciever, ErrorHandler);
         }
         /// <summary>
         /// Delete The File

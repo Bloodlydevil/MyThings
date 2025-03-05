@@ -9,23 +9,23 @@ namespace MyThings.Scene
     /// <summary>
     /// Create A Scene and Load It
     /// </summary>
-    public struct Scene
+    public class Scene
     {
+        private const float ProgressEnd = 0.9f;
+
         [SerializeField]
         private int m_SceneId;
-        /// <summary>
-        /// The SceneId
-        /// </summary>
-        public int SceneId=>m_SceneId;
-        /// <summary>
-        /// The Async Operation Used To Load Data Asyncronously ( If Used Else It Will be Null )
-        /// </summary>
-        public AsyncOperation AsyncOperation;
-        /// <summary>
-        /// The Couroutine Used
-        /// </summary>
-        public Coroutine Routine;
+
+        [SerializeField]
+        private string m_SceneName;
+
+        private AsyncOperation m_AsyncOperation;
+
+        private Coroutine m_LoadRoutine;
+
         public bool IsLoaded { get; private set; }
+        public int SceneId => m_SceneId;
+        public bool IsLoadingAsync => m_AsyncOperation != null;
 
         /// <summary>
         /// A Scene Creator
@@ -34,63 +34,68 @@ namespace MyThings.Scene
         public Scene(int SceneId)
         {
             this.m_SceneId = SceneId;
-            AsyncOperation = null;
-            Routine = null;
-            IsLoaded=false;
+        }
+        public Scene(int SceneId, string SceneName) : this(SceneId)
+        {
+            m_SceneName = SceneName;
         }
 
-        private IEnumerator Load(Action<float> CallbackProgress,Action CallbackEnd)
-        {
-            while (!AsyncOperation.isDone)
-            {
-                CallbackProgress?.Invoke(AsyncOperation.progress);
-                yield return null;
-            }
-            CallbackEnd?.Invoke();
-            IsLoaded = true;
-        }
-        private IEnumerator Load(Action<float> CallbackProgress,Action CallBackLoaded, Action CallbackEnd)
-        {
-            bool LoadedCalled = false;
-            while (!AsyncOperation.isDone)
-            {
-                CallbackProgress?.Invoke(AsyncOperation.progress);
-                if(AsyncOperation.progress>=0.9f)
-                {
-                    if(!LoadedCalled)
-                    {
-                        LoadedCalled = true;
-                        CallBackLoaded();
-                    }
-                }
-                yield return null;
-            }
-            CallbackEnd?.Invoke();
-            IsLoaded = true;
+        #region private
 
-        }
-        private IEnumerator Load( Action CallbackEnd)
+        private IEnumerator Load(Action<float> CallBackProgress,Action CallBackLoaded,Action CallBackEnd)
         {
-            while (!AsyncOperation.isDone)
+            while (m_AsyncOperation.progress < ProgressEnd)
+            {
+                CallBackProgress?.Invoke(m_AsyncOperation.progress);
+                yield return null;
+            }
+
+            CallBackLoaded?.Invoke();
+
+            while(!m_AsyncOperation.isDone)
+            {
+                CallBackProgress?.Invoke(m_AsyncOperation.progress);
+                yield return null;
+            }
+
+            IsLoaded = true;
+            CallBackEnd?.Invoke();
+
+            m_LoadRoutine = null;
+        }
+        private IEnumerator UnLoad(AsyncOperation operation)
+        {
+            while(!operation.isDone)
             {
                 yield return null;
             }
-            IsLoaded = true;
-            CallbackEnd?.Invoke();
         }
+        private void Load(Action<float> CallbackProgress, Action CallbackLoaded, Action CallbackEnd, bool Activation)
+        {
+            IsLoaded = false;
+            m_AsyncOperation.allowSceneActivation = Activation;
+            m_LoadRoutine = SceneLoader.Instance.StartCoroutine(Load(CallbackProgress, CallbackLoaded, CallbackEnd));
+        }
+
+        #endregion
+
         #region Public
+
         /// <summary>
         /// Stop The Couroutine Used (does not Stop The Scene Load)
         /// </summary>
-        public void StopCouroutine()
+        public void Stop(UnloadSceneOptions options)
         {
-            if(Routine != null)
+
+            if (m_LoadRoutine != null)
             {
-                SceneLoader.Instance.StopCoroutine(Routine);
+                SceneLoader.Instance.StopCoroutine(m_LoadRoutine);
             }
+
+            SceneLoader.Instance.StartCoroutine(UnLoad(SceneManager.UnloadSceneAsync(m_SceneId, options)));
         }
         /// <summary>
-        /// Load Scene 
+        /// Load Scene
         /// </summary>
         /// <param name="mode">The Scene Mode Used</param>
         public void Load(LoadSceneMode mode)
@@ -101,59 +106,63 @@ namespace MyThings.Scene
         /// Load Scene
         /// </summary>
         /// <param name="parameters">The Scene Parameters Used</param>
-        public void Load(LoadSceneParameters parameters)
+        public UnityEngine.SceneManagement.Scene Load(LoadSceneParameters parameters)
         {
-            SceneManager.LoadScene(m_SceneId, parameters);
+            return SceneManager.LoadScene(m_SceneId, parameters);
         }
         /// <summary>
-        /// Load Scene Asyncronously In Background
+        /// Load The Scene Asyncronously (Allow For Only Loading Of The Scene)
         /// </summary>
-        /// <param name="mode">The Scene Mode Used</param>
-        /// <param name="Activation">Activate Scene As Soon As It Is Loaded</param>
-        public void LoadAsync(LoadSceneMode mode,bool Activation=true)
-        {
-            IsLoaded = false;
-            AsyncOperation = SceneManager.LoadSceneAsync(m_SceneId, mode);
-            AsyncOperation.allowSceneActivation = Activation;
+        /// <param name="mode">The Scene mode</param>
+        /// <param name="CallbackProgress">This Function is Feed The Scene Progress Value</param>
+        /// <param name="CallbackLoaded">This Function To Call When Scene Has Finished Loading (90% load finished) activation is done after it</param>
+        /// <param name="CallbackEnd">This Function Is Called When Scene has finished complete loading</param>
+        /// <param name="Activation">If The Scene Should Activate as soon as it is loaded</param>
+        public void LoadAsync(LoadSceneMode mode, Action<float> CallbackProgress = null, Action CallbackLoaded = null, Action CallbackEnd = null, bool Activation = false)
+        {  
+            m_AsyncOperation = SceneManager.LoadSceneAsync(m_SceneId, mode);
+            Load(CallbackProgress, CallbackLoaded, CallbackEnd, Activation);
         }
         /// <summary>
-        /// Load Scene Asyncrously In Background
+        /// Load The Scene Asyncronously (Allow For Only Loading Of The Scene)
         /// </summary>
         /// <param name="parameters">The Scene Parameters</param>
-        /// <param name="Activation">Activate Scene As Soon As It Is Loaded</param>
-        public void LoadAsync(LoadSceneParameters parameters, bool Activation=true)
+        /// <param name="CallbackProgress">This Function is Feed The Scene Progress Value</param>
+        /// <param name="CallbackLoaded">This Function To Call When Scene Has Finished Loading (90% load finished) activation is done after it</param>
+        /// <param name="CallbackEnd">This Function Is Called When Scene has finished complete loading</param>
+        /// <param name="Activation">If The Scene Should Activate as soon as it is loaded</param>
+        public void LoadAsync(LoadSceneParameters parameters, Action<float> CallbackProgress = null, Action CallbackLoaded = null, Action CallbackEnd = null, bool Activation = false)
         {
-            IsLoaded = false;
-            AsyncOperation = SceneManager.LoadSceneAsync(m_SceneId, parameters);
-            AsyncOperation.allowSceneActivation = Activation;
+            m_AsyncOperation = SceneManager.LoadSceneAsync(m_SceneId, parameters);
+            Load(CallbackProgress, CallbackLoaded, CallbackEnd, Activation);
         }
         /// <summary>
-        /// Deal With the Scene Loading
+        /// Set The SCene Activation
         /// </summary>
-        /// <param name="CallbackEnd">The CallBack To Call At End</param>
-        public void WaitForLoad(Action CallbackEnd)
+        /// <param name="Activation"></param>
+        public void SetSceneActivation(bool Activation)
         {
-            Routine = SceneLoader.Instance.StartCoroutine(Load(CallbackEnd));
+            if (m_AsyncOperation != null)
+                m_AsyncOperation.allowSceneActivation = Activation;
         }
-        /// <summary>
-        /// Deal With the Scene Loading
-        /// </summary>
-        /// <param name="CallbackProgress">The Progress Of The CallBack</param>
-        /// <param name="CallbackEnd">The CallBack To Call At End</param>
-        public void WaitForLoad(Action<float> CallbackProgress, Action CallbackEnd)
+        #endregion
+
+        #region Operator
+
+        public static explicit operator int(Scene scene) => scene.m_SceneId;
+        public static explicit operator string(Scene scene) => scene.m_SceneName;
+        public static bool operator ==(Scene first, Scene second) => first.m_SceneId == second.m_SceneId;
+        public static bool operator !=(Scene first, Scene second) => first.m_SceneId != second.m_SceneId;
+        public override bool Equals(object obj)
         {
-            Routine = SceneLoader.Instance.StartCoroutine(Load(CallbackProgress, CallbackEnd));
+            if (obj is Scene other)
+            {
+                return m_SceneId == other.m_SceneId;
+            }
+            return false;
         }
-        /// <summary>
-        /// Deal With the Scene Loading (Only Use When Scene Activation Is Turned Off)
-        /// </summary>
-        /// <param name="CallbackProgress">The Progress Of The CallBack</param>
-        /// <param name="CallbackEnd">The CallBack To Call At End</param>
-        /// <param name="CallbackLoaded">When Scene Is Loaded Then This Will Be Called</param>
-        public void WaitForLoad(Action<float> CallbackProgress,Action CallbackLoaded, Action CallbackEnd)
-        {
-            Routine = SceneLoader.Instance.StartCoroutine(Load(CallbackProgress, CallbackLoaded, CallbackEnd));
-        }
+        public override int GetHashCode() => m_SceneId.GetHashCode();
+
         #endregion
     }
 }

@@ -65,13 +65,5 @@ namespace MyThings.SaveSystem
             return new LoadedData<type>(default, true, CompletePath);
 
         }
-        /// <summary>
-        /// Delete The File
-        /// </summary>
-        /// <param name="path">The File Path</param>
-        public static void DeleteData(this string path)
-        {
-            SaverAndLoader.DeleteData(path);
-        }
     }
 }
