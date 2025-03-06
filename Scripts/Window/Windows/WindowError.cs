@@ -1,5 +1,4 @@
-﻿using MyThings.Window.Utills;
-using MyThings.Window.WindowHelper;
+﻿using MyThings.Window.WindowHelper;
 using UnityEngine;
 
 namespace MyThings.Window.Windows

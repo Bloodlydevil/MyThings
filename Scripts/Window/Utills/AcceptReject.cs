@@ -4,15 +4,29 @@ using UnityEngine.UI;
 
 namespace MyThings.Window.Utills
 {
+    /// <summary>
+    /// A class To Hold Accept And Reject For Any window
+    /// </summary>
     public class AcceptReject : MonoBehaviour
     {
-        [SerializeField] private Button m_Accept;
-        [SerializeField] private Button m_Reject;
+        /// <summary>
+        /// The Accept Button
+        /// </summary>
+        public Button Accept;
+        /// <summary>
+        /// The Reject Button
+        /// </summary>
+        public Button Reject;
 
-        public void SetUp(UnityAction Accept, UnityAction Reject)
+        /// <summary>
+        /// Link The Button With The Functions
+        /// </summary>
+        /// <param name="Accept">The Accept Function</param>
+        /// <param name="Reject">The Reject Function</param>
+        public void Link(UnityAction Accept, UnityAction Reject)
         {
-            m_Accept.onClick.AddListener(Accept);
-            m_Reject.onClick.AddListener(Reject);
+            this.Accept.onClick.AddListener(Accept);
+            this.Reject.onClick.AddListener(Reject);
         }
     }
 }
