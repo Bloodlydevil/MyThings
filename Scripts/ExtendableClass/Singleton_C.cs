@@ -8,7 +8,7 @@ namespace MyThings.ExtendableClass
     /// <typeparam name="type">The Componenet</typeparam>
     public class Singleton_C<type> : Singleton_D<type> where type : Component
     {
-        private static bool Alive = true;
+        protected static bool m_Alive = true;
 
         /// <summary>
         /// Get The Instance And If Null Then Create New
@@ -17,9 +17,9 @@ namespace MyThings.ExtendableClass
         {
             get
             {
-                if (_instance == null && Alive)
+                if (_instance == null && m_Alive)
                 {
-                    var game = new GameObject();
+                    var game = new GameObject(nameof(type));
                     game.name = typeof(type).Name;
                     _instance = game.AddComponent<type>();
                 }
@@ -28,7 +28,7 @@ namespace MyThings.ExtendableClass
         }
         protected virtual void OnApplicationQuit()
         {
-            Alive = false;
+            m_Alive = false;
         }
     }
 }

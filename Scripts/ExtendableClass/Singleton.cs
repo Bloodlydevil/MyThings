@@ -1,6 +1,7 @@
 using MyThings.Extension;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 namespace MyThings.ExtendableClass
 {
@@ -13,6 +14,10 @@ namespace MyThings.ExtendableClass
     public class Singleton<type> : MonoBehaviour where type : Component
     {
         protected static type _instance;
+        /// <summary>
+        /// If The Object Is Alive Or Not
+        /// </summary>
+        protected bool Alive = true;
         /// <summary>
         /// If The Instance Is Created Or Not
         /// </summary>
@@ -31,6 +36,7 @@ namespace MyThings.ExtendableClass
             if (_instance != null)
             {
                 Debug.LogWarning("Atempting To Create 2 Singleton");
+                Alive = false;
                 Destroy(gameObject);
                 return;
             }
