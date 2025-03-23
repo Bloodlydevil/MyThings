@@ -27,7 +27,7 @@ namespace MyThings.MyCanvas
 
 
 
-        [SerializeField] private RectTransform m_RectTransform;
+        [SerializeField] private RectTransform m_Canvas;
 
 
         public event Action OnDragging;
@@ -49,7 +49,7 @@ namespace MyThings.MyCanvas
         {
             if (eventData.button == DragMovementButton)
             {
-                m_RectTransform.anchoredPosition += eventData.delta / CanvasScaleFactor;
+                m_Canvas.anchoredPosition += eventData.delta / CanvasScaleFactor;
                 CanvasAdjester?.Invoke();
                 OnDragging?.Invoke();
             }
@@ -66,7 +66,7 @@ namespace MyThings.MyCanvas
             m_AccelerationTime += Time.deltaTime;
 
             Vector3 DragValue = CAMousePoint.normalized * m_Velocity;
-            m_RectTransform.localPosition -= DragValue;
+            m_Canvas.localPosition -= DragValue;
 
 
 
