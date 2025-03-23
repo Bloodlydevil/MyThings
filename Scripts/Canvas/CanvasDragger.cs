@@ -27,7 +27,7 @@ namespace MyThings.MyCanvas
 
 
 
-        private RectTransform m_RectTransform;
+        [SerializeField] private RectTransform m_RectTransform;
 
 
         public event Action OnDragging;
@@ -44,10 +44,6 @@ namespace MyThings.MyCanvas
 
 
 
-        private void Start()
-        {
-            m_RectTransform = (RectTransform)transform;
-        }
 
         public void OnDrag(PointerEventData eventData)
         {
