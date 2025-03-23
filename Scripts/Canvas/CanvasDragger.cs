@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
-namespace MyThings.Canvas
+namespace MyThings.MyCanvas
 {
     /// <summary>
     /// A Class To Allow Movement Of The Work Area
