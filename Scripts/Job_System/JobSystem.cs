@@ -1,6 +1,5 @@
 using MyThings.Data;
 using MyThings.ExtendableClass;
-using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,8 +15,8 @@ namespace MyThings.Job_System
         /// <summary>
         /// The Total Jobs Running
         /// </summary>
-        [SerializeField, ReadOnly] private int TotalUpdateJobs;
-        [SerializeField, ReadOnly] private int TotalFixedUpdateJobs;
+        [SerializeField] private int TotalUpdateJobs;
+        [SerializeField] private int TotalFixedUpdateJobs;
 
         /// <summary>
         /// The Current Active Jobs

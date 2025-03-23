@@ -3,6 +3,10 @@ using System;
 using System.IO;
 using UnityEngine;
 
+
+//com.unity.nuget.newtonsoft-json
+
+
 namespace MyThings.SaveSystem
 {
     public static class SaverAndLoaderJson

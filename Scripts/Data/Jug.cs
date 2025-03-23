@@ -1,5 +1,4 @@
-﻿using Sirenix.OdinInspector;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace MyThings.Data
@@ -12,9 +11,7 @@ namespace MyThings.Data
     {
         private float m_value;
         private float m_Capacity;
-        [SerializeField, HorizontalGroup(order: 1, GroupName = "Limit"), ValidateInput("@"+nameof(m_MaxValue) + ">" + nameof(m_MinValue))]
         private float m_MaxValue;
-        [SerializeField, HorizontalGroup(order: 2, GroupName = "Limit"), ValidateInput("@"+nameof(m_MaxValue) + ">" + nameof(m_MinValue))]
         private float m_MinValue;
 
 

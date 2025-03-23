@@ -5,6 +5,11 @@ using System.Reflection;
 using MyThings.Extension;
 using UnityEngine;
 using static MyThings.Reflections.Path;
+
+
+//com.unity.nuget.newtonsoft-json
+
+
 using Newtonsoft.Json;
 
 namespace MyThings.Reflections
