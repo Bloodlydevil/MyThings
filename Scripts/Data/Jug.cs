@@ -11,7 +11,9 @@ namespace MyThings.Data
     {
         private float m_value;
         private float m_Capacity;
+        [SerializeField]
         private float m_MaxValue;
+        [SerializeField]
         private float m_MinValue;
 
 
