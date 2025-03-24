@@ -16,8 +16,29 @@ public class CanvasContainer : MonoBehaviour
     private float GetExtra(float centerDis,float Containedsize,float ContainerSize)
     {
         float extra = Mathf.Abs(centerDis) + Containedsize / 2 - ContainerSize / 2;
-        extra = Mathf.Max(extra.Print(), 0);
+        extra = Mathf.Max(extra, 0);
         return extra;
+    }
+    private Vector2 limitConfined(RectTransform Confined, bool ConfinedIsSmall)
+    {
+        Vector2 ObjectSize = Confined.rect.size * Confined.localScale;
+
+        Vector2 WindowSize = m_Confiner.rect.size * m_Confiner.localScale;
+
+        Vector2 ObjectDir = (Confined.position - m_Confiner.position) / CanvasScaleFactor;
+
+        Vector2 Extra;
+
+        if (ConfinedIsSmall)
+            Extra = new(GetExtra(ObjectDir.x, ObjectSize.x, WindowSize.x), GetExtra(ObjectDir.y, ObjectSize.y, WindowSize.y));
+        else
+            Extra= new(GetExtra(ObjectDir.x, WindowSize.x, ObjectSize.x), GetExtra(ObjectDir.y, WindowSize.y, ObjectSize.y));
+
+        Vector2 Change = ObjectDir.GetSign() * Extra;
+
+        Confined.anchoredPosition -= Change;
+
+        return Change;
     }
     public Vector2 LimitConfined(RectTransform Confined)
     {
@@ -25,46 +46,11 @@ public class CanvasContainer : MonoBehaviour
 
         Vector2 WindowSize = m_Confiner.rect.size * m_Confiner.localScale;
 
-        if (ObjectSize.GetSize() < WindowSize.GetSize())
-        {
-            return LimitSmallConfined(Confined);
-        }
-        else
-        {
-            return LimitBigConfined(Confined);
-        }
+        return limitConfined(Confined, ObjectSize.GetSize() < WindowSize.GetSize());
     }
-    public Vector2 LimitBigConfined(RectTransform Confined)
-    {
-        Vector2 ObjectSize = Confined.rect.size * Confined.localScale;
+    public Vector2 LimitBigConfined(RectTransform Confined) => limitConfined(Confined, false);
+    public Vector2 LimitSmallConfined(RectTransform Confined) => limitConfined(Confined, true);
 
-        Vector2 WindowSize = m_Confiner.rect.size * m_Confiner.localScale;
-
-        Vector2 ObjectDir = Confined.position - m_Confiner.position;
-
-        Vector2 Extra = new(GetExtra(ObjectDir.x, WindowSize.x, ObjectSize.x), GetExtra(ObjectDir.y, WindowSize.y, ObjectSize.y));
-
-        Vector2 Change = ObjectDir.GetSign() * Extra;
-
-        Confined.anchoredPosition -= Change;
-
-        return Change;
-    }
-    public Vector2 LimitSmallConfined(RectTransform Confined)
-    {
-        Vector2 ObjectSize = Confined.rect.size * Confined.localScale;
-
-        Vector2 WindowSize = m_Confiner.rect.size * m_Confiner.localScale;
-
-        Vector2 ObjectDir = Confined.position - m_Confiner.position;
-
-        Vector2 Extra = new(GetExtra(ObjectDir.x, ObjectSize.x, WindowSize.x), GetExtra(ObjectDir.y, ObjectSize.y, WindowSize.y));
-
-        Vector2 Change = ObjectDir.GetSign() * Extra;
-
-        Confined.anchoredPosition -= Change;
-        return Change;
-    }
     ///// <summary>
     ///// Adjust The Work Area If It Has Gone Outside The Limit
     ///// </summary>

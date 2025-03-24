@@ -98,6 +98,7 @@ namespace MyThings.MyCanvas
                 Draggable.anchoredPosition = (eventData.position - ScreenCenter + DeltaGrabPosition) / CanvasScaleFactor;
 
                 CanvasAdjester?.Invoke();
+
                 OnDragging?.Invoke();
             }
         }
