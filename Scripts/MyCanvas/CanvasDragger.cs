@@ -23,9 +23,6 @@ namespace MyThings.MyCanvas
         [SerializeField] private Jug m_AccelerationTime = new Jug(5, 0);
 
 
-        [Tooltip("The Canvas To Drag")]
-        [SerializeField] private RectTransform m_Draggable;
-
         [Tooltip("Used For Correcting The Exact Position Of Dragging")]
         private Vector2 DeltaGrabPosition;
 
@@ -45,7 +42,8 @@ namespace MyThings.MyCanvas
         [Tooltip("The Screen Center (Its Not (0,0))")]
         [field: SerializeField] public Vector2 ScreenCenter { get; set; }
 
-
+        [Tooltip("The Canvas To Drag")]
+        [field: SerializeField] public RectTransform Draggable { get; private set; }
 
         /// <summary>
         /// Manual Dragging Of The Canvas Using The Mouse Position
@@ -60,7 +58,7 @@ namespace MyThings.MyCanvas
 
             Vector3 DragValue = MousePoint.normalized * m_Velocity;
 
-            m_Draggable.localPosition -= DragValue;
+            Draggable.localPosition -= DragValue;
 
             OnDragging?.Invoke();
             // dragging Done
@@ -89,7 +87,7 @@ namespace MyThings.MyCanvas
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            DeltaGrabPosition = m_Draggable.anchoredPosition - eventData.position + ScreenCenter;
+            DeltaGrabPosition = Draggable.anchoredPosition - eventData.position + ScreenCenter;
         }
         public void OnDrag(PointerEventData eventData)
         {
@@ -97,7 +95,7 @@ namespace MyThings.MyCanvas
             {
                 //m_Canvas.anchoredPosition += eventData.delta / CanvasScaleFactor;
 
-                m_Draggable.anchoredPosition = (eventData.position - ScreenCenter + DeltaGrabPosition) / CanvasScaleFactor;
+                Draggable.anchoredPosition = (eventData.position - ScreenCenter + DeltaGrabPosition) / CanvasScaleFactor;
 
                 CanvasAdjester?.Invoke();
                 OnDragging?.Invoke();

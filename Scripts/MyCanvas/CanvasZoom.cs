@@ -10,7 +10,7 @@ namespace MyThings.MyCanvas
     /// </summary>
     public class CanvasZoom : MonoBehaviour, IScrollHandler
     {
-        [SerializeField] private RectTransform m_ZoomTarget;
+        [field:SerializeField] public RectTransform ZoomTarget { get; private set; }
 
         [Min(0), SerializeField] private float m_minScale;
 
@@ -37,7 +37,7 @@ namespace MyThings.MyCanvas
         }
         public void SetUp(Vector2 ScreenSize)
         {
-            m_CenterLocation = ScreenSize / 2 + m_ZoomTarget.anchoredPosition * CanvasScaleFactor;
+            m_CenterLocation = ScreenSize / 2 + ZoomTarget.anchoredPosition * CanvasScaleFactor;
         }
         public void OnScroll(PointerEventData eventData)
         {
