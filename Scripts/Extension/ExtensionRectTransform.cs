@@ -112,6 +112,10 @@ namespace MyThings.Extension
             WindowObjectViewer.Create(rectTransform.rect);
             return rectTransform.rect.Contains( point.Print());
         }
+        public static Vector2 OnlyGlobalScale(this RectTransform rectTransform)
+        {
+            return rectTransform.lossyScale/(Vector2)rectTransform.localScale;
+        }
     }
     public enum Anchors
     {

@@ -8,8 +8,6 @@ public class CanvasContainer : MonoBehaviour
 {
 
     [SerializeField] private RectTransform m_Confiner;
-    //[SerializeField] private RectTransform m_WorkView;
-    //[SerializeField] private RectTransform m_WorkArea;
 
     [field: SerializeField] public float CanvasScaleFactor { get; set; }
 
@@ -21,9 +19,9 @@ public class CanvasContainer : MonoBehaviour
     }
     private Vector2 limitConfined(RectTransform Confined, bool ConfinedIsSmall)
     {
-        Vector2 ObjectSize = Confined.rect.size * Confined.localScale;
+        Vector2 ObjectSize = Confined.rect.size * Confined.lossyScale / CanvasScaleFactor;
 
-        Vector2 WindowSize = m_Confiner.rect.size * m_Confiner.localScale;
+        Vector2 WindowSize = m_Confiner.rect.size * m_Confiner.lossyScale / CanvasScaleFactor;
 
         Vector2 ObjectDir = (Confined.position - m_Confiner.position) / CanvasScaleFactor;
 
@@ -34,9 +32,11 @@ public class CanvasContainer : MonoBehaviour
         else
             Extra= new(GetExtra(ObjectDir.x, WindowSize.x, ObjectSize.x), GetExtra(ObjectDir.y, WindowSize.y, ObjectSize.y));
 
-        Vector2 Change = ObjectDir.GetSign() * Extra;
+        float Scale= (Confined.OnlyGlobalScale().x / CanvasScaleFactor);
 
-        Confined.anchoredPosition -= Change;
+        Vector2 Change = ObjectDir.GetSign() * Extra / Scale;
+
+        Confined.localPosition -= Change.ToVector3(0);
 
         return Change;
     }
@@ -50,23 +50,6 @@ public class CanvasContainer : MonoBehaviour
     }
     public Vector2 LimitBigConfined(RectTransform Confined) => limitConfined(Confined, false);
     public Vector2 LimitSmallConfined(RectTransform Confined) => limitConfined(Confined, true);
-
-    ///// <summary>
-    ///// Adjust The Work Area If It Has Gone Outside The Limit
-    ///// </summary>
-    ///// <returns>The Delta Change The Work Area Has Done</returns>
-    //public Vector2 AdjustDrawArea()
-    //{
-    //    Vector2 Maxdis = m_WorkArea.rect.size * m_WorkArea.localScale / 2;
-    //    Vector2 CurrentDis = m_WorkArea.anchoredPosition.Abs() + m_WorkView.rect.size / 2;
-    //    if(CurrentDis.IsAnyGreater(Maxdis,out Vector2 Value))
-    //    {
-    //        Vector2 Sign = m_WorkArea.anchoredPosition.GetSign();
-    //        m_WorkArea.anchoredPosition -= new Vector2(Value.x > 0 ? Value.x * Sign.x : 0, Value.y > 0 ? Value.y * Sign.y : 0);
-    //        return -Value;
-    //    }
-    //    return Vector2.zero;
-    //}
 
     ///// <summary>
     ///// Adjust The Node To Be Inside The Limit Area
