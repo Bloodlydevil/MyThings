@@ -53,8 +53,6 @@ namespace MyThings.MyCanvas
                 // When Scalling We Want To Make Sure The Center Remains same
                 transform.localPosition *= ScaleFactor;// When Scalling We Want
                                                        // When Scalling Up Or Down We Want To Make The center the Mouse
-
-
                 transform.localPosition += updatedPoint * (1 - ScaleFactor) / CanvasScaleFactor;
                 OnScrolling?.Invoke();
             }
