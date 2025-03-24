@@ -9,11 +9,8 @@ namespace MyThings.MyCanvas
     /// <summary>
     /// A Class To Allow Movement Of The Work Area
     /// </summary>
-    public class CanvasDragger : MonoBehaviour, IDragHandler
+    public class CanvasDragger : MonoBehaviour, IDragHandler , IPointerDownHandler
     {
-
-
-
         [Tooltip("The Velocity Limit for The Drag")]
         [SerializeField] private Jug m_Velocity = new Jug(50, 0);
 
@@ -26,10 +23,13 @@ namespace MyThings.MyCanvas
         [SerializeField] private Jug m_AccelerationTime = new Jug(5, 0);
 
 
+        [Tooltip("The Canvas To Drag")]
+        [SerializeField] private RectTransform m_Draggable;
 
-        [SerializeField] private RectTransform m_Canvas;
+        [Tooltip("Used For Correcting The Exact Position Of Dragging")]
+        private Vector2 DeltaGrabPosition;
 
-
+        [Tooltip("Event Is Called When Dragging")]
         public event Action OnDragging;
 
 
@@ -42,45 +42,30 @@ namespace MyThings.MyCanvas
         [Tooltip("The Function Which Adjust The Screen When Dragging ")]
         public Func<Vector2> CanvasAdjester { get; set; }
 
+        [Tooltip("The Screen Center (Its Not (0,0))")]
+        [field: SerializeField] public Vector2 ScreenCenter { get; set; }
 
 
 
-        public void OnDrag(PointerEventData eventData)
-        {
-            if (eventData.button == DragMovementButton)
-            {
-                m_Canvas.anchoredPosition += eventData.delta / CanvasScaleFactor;
-                CanvasAdjester?.Invoke();
-                OnDragging?.Invoke();
-            }
-        }
         /// <summary>
-        /// Drag The Canvas In The Direction Where We Are Trying To Go Based On The Direction Where Mouse Is
+        /// Manual Dragging Of The Canvas Using The Mouse Position
         /// </summary>
-        /// <param name="CAMousePoint">The Point Where Mouse Is .The Mouse Direction should be from Center of The Screen</param>
+        /// <param name="MousePoint">The Mouse Position Relative To The Screen Size</param>
         /// <returns>Adjustement done While Dragging In The Direction</returns>
-        public Vector2 ManualDrag(Vector3 CAMousePoint)
+        public Vector2 ManualDrag(Vector3 MousePoint)
         {
             m_Velocity += m_Acceleration.Evaluate(m_AccelerationTime.NormalizedLevel);
 
             m_AccelerationTime += Time.deltaTime;
 
-            Vector3 DragValue = CAMousePoint.normalized * m_Velocity;
-            m_Canvas.localPosition -= DragValue;
+            Vector3 DragValue = MousePoint.normalized * m_Velocity;
 
-
+            m_Draggable.localPosition -= DragValue;
 
             OnDragging?.Invoke();
-
-
-
             // dragging Done
 
             // Since It Is Manual Dragging So Return The Amount Adjested
-
-
-
-
             if (CanvasAdjester != null)
             {
                 Vector2 Adjust = CanvasAdjester();
@@ -99,5 +84,26 @@ namespace MyThings.MyCanvas
             m_Velocity.Drain();
             m_AccelerationTime.Drain();
         }
+
+        #region Events
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            DeltaGrabPosition = m_Draggable.anchoredPosition - eventData.position + ScreenCenter;
+        }
+        public void OnDrag(PointerEventData eventData)
+        {
+            if (eventData.button == DragMovementButton)
+            {
+                //m_Canvas.anchoredPosition += eventData.delta / CanvasScaleFactor;
+
+                m_Draggable.anchoredPosition = (eventData.position - ScreenCenter + DeltaGrabPosition) / CanvasScaleFactor;
+
+                CanvasAdjester?.Invoke();
+                OnDragging?.Invoke();
+            }
+        }
+
+        #endregion
     }
 }

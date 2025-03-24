@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace MyThings.Extension
 {
@@ -80,9 +75,24 @@ namespace MyThings.Extension
         {
             return v1.x > v2.x || v1.y > v2.y;
         }
+        /// <summary>
+        /// Get The Sign Of The Vector 
+        /// Like If Vector Is (25,-2) get (1,-1);
+        /// </summary>
+        /// <param name="v">The Vector To Find Sign Of</param>
+        /// <returns>The Signed Vector</returns>
         public static Vector2 GetSign(this Vector2 v)
         {
             return new Vector2(Mathf.Sign(v.x), Mathf.Sign(v.y));
+        }
+        /// <summary>
+        /// Get The Area Of The Vector (Assumes The Vector To Be Rectangle)
+        /// </summary>
+        /// <param name="v">The Vector To Find The Sign Of</param>
+        /// <returns>The Area Of The Vector</returns>
+        public static float GetSize(this Vector2 v)
+        {
+            return Mathf.Abs(v.x * v.y);
         }
     }
 }
