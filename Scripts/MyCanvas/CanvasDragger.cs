@@ -1,4 +1,5 @@
 using MyThings.Data;
+using MyThings.Extension;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -87,13 +88,12 @@ namespace MyThings.MyCanvas
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            DeltaGrabPosition = Draggable.anchoredPosition - eventData.position + ScreenCenter;
+            DeltaGrabPosition = Draggable.anchoredPosition* CanvasScaleFactor - eventData.position + ScreenCenter;
         }
         public void OnDrag(PointerEventData eventData)
         {
             if (eventData.button == DragMovementButton)
             {
-                //m_Canvas.anchoredPosition += eventData.delta / CanvasScaleFactor;
 
                 Draggable.anchoredPosition = (eventData.position - ScreenCenter + DeltaGrabPosition) / CanvasScaleFactor;
 
