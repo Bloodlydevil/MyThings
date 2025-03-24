@@ -12,10 +12,5 @@ namespace MyThings
         /// The Loading Screen Index
         /// </summary>
         public static int LoadingScreen = 1;
-
-
-        //[MarshalAs(UnmanagedType.ByValArray, SizeConst = 3, ArraySubType = UnmanagedType.I1)]
-        //public bool[] values;
-
     }
 }

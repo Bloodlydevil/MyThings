@@ -7,44 +7,60 @@ namespace MyThings.MyCanvas
 {
 
     /// <summary>
-    /// A Class To Allow Selection Functionality
+    /// A Class To Allow Any sort Of Selection To Be Done
     /// </summary>
     public class CanvasSelection : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerUpHandler, IPointerDownHandler
     {
-
+        [Tooltip("The Visual Used In The Selection")]
         [SerializeField] private GameObject m_SelectionVisual;
-        [SerializeField] private RectTransform m_Canvas;
-        
+        [Tooltip("The Selection Location (The Playe Where We Can Select)")]
+        [SerializeField] private RectTransform m_SelectionArea;
+
+        [Tooltip("The Location From Where Selection Dragg Has Started")]
         private Vector2 m_DragStart;
+        [Tooltip("The Center Of The Screen")]
         private Vector2 m_Center;
 
-
+        [Tooltip("This Event Is Called When Selection Has Finnished")]
         public event Action OnSelectionEnd;
+        [Tooltip("This Event Is Called When Selection Has Been Performed")]
         public event Action OnDeSelect;
+        [Tooltip("This Event Is Called When Any Selection Area Is Changed")]
         public event Action<Vector2, Vector2> OnSelectAreaChange;
 
+        [Tooltip("The Button Used During Selection")]
         [field: SerializeField] public PointerEventData.InputButton SelectionButton { get; set; }
+        [Tooltip("The Canvas Scale Factor")]
         [field: SerializeField] public float CanvasScaleFactor { get; set; }
+
+
 
         private void Start()
         {
             m_SelectionVisual.SetActive(false);
         }
+
+
         /// <summary>
-        /// Correct The Position Of The Mouse To Make It Centered With the Work Area
+        /// Correct The Position Of The Mouse To Make It Centered With the Selection Area
         /// </summary>
         /// <param name="MousePosition">The Raw Mouse Position To Correct</param>
         /// <returns>Corrected Mouse Position</returns>
         private Vector2 MakeMouseCorrect(Vector2 MousePosition)
         {
             
-            return ((MousePosition - m_Center) /CanvasScaleFactor - m_Canvas.anchoredPosition) / m_Canvas.localScale.y;
+            return ((MousePosition - m_Center) /CanvasScaleFactor - m_SelectionArea.anchoredPosition) / m_SelectionArea.localScale.y;
         }
-
+        /// <summary>
+        /// Set Up The Selction Canvas Class
+        /// </summary>
+        /// <param name="ScreenSize">The Size Of The Screen</param>
         public void SetUp(Vector2 ScreenSize)
         {
-            m_Center= ScreenSize / 2 + m_Canvas.anchoredPosition * CanvasScaleFactor;
+            m_Center= ScreenSize / 2 + m_SelectionArea.anchoredPosition * CanvasScaleFactor;
         }
+
+
         #region Events
 
 

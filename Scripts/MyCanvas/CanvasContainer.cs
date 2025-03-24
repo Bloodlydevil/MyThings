@@ -2,28 +2,48 @@ using MyThings.Extension;
 using UnityEngine;
 
 /// <summary>
-/// A Class To Limit All The Movement Of The Work Area (Confined In the Fixed Area)
+/// A Class To Make Any Canvas Confined Inside A Bigger Canvas (Does Not Allow a canvas to go out of bound)
+/// if the canvas confined is small then it will remain inside the boundary area
+/// if the canvas is bigger then the bigger canvas which is confined will cover up the smaller boundary area
 /// </summary>
 public class CanvasContainer : MonoBehaviour
 {
+    [Tooltip("The Area In Which All Should Be Confined")]
+    [SerializeField] private RectTransform m_Boundary;
 
-    [SerializeField] private RectTransform m_Confiner;
+    [Tooltip("The Canvas Scale Factor (Needs To Be Set Up For Proper Working)")]
+    [field: SerializeField] public float CanvasScaleFactor { get; set; } = 1;
 
-    [field: SerializeField] public float CanvasScaleFactor { get; set; }
 
-    private float GetExtra(float centerDis,float Containedsize,float ContainerSize)
+    #region Private
+
+    /// <summary>
+    /// Get The Distance The Contained object has gone out of the boundary
+    /// </summary>
+    /// <param name="centerDis">the distance between the center of the boundary and the confined</param>
+    /// <param name="smallSize">The Small Object's Size</param>
+    /// <param name="biggSize">The Big Object's Size</param>
+    /// <returns>The Extra Distance Traveled</returns>
+    private float GetExtra(float centerDis,float smallSize,float biggSize)
     {
-        float extra = Mathf.Abs(centerDis) + Containedsize / 2 - ContainerSize / 2;
+        float extra = Mathf.Abs(centerDis) + smallSize / 2 - biggSize / 2;
         extra = Mathf.Max(extra, 0);
         return extra;
     }
+
+    /// <summary>
+    /// limit the confined object to be inside the boundaray
+    /// </summary>
+    /// <param name="Confined">The Object To Confine</param>
+    /// <param name="ConfinedIsSmall">Is The Confined Object Small?</param>
+    /// <returns>The Delta Position The Object Is Shifted</returns>
     private Vector2 limitConfined(RectTransform Confined, bool ConfinedIsSmall)
     {
         Vector2 ObjectSize = Confined.rect.size * Confined.lossyScale / CanvasScaleFactor;
 
-        Vector2 WindowSize = m_Confiner.rect.size * m_Confiner.lossyScale / CanvasScaleFactor;
+        Vector2 WindowSize = m_Boundary.rect.size * m_Boundary.lossyScale / CanvasScaleFactor;
 
-        Vector2 ObjectDir = (Confined.position - m_Confiner.position) / CanvasScaleFactor;
+        Vector2 ObjectDir = (Confined.position - m_Boundary.position) / CanvasScaleFactor;
 
         Vector2 Extra;
 
@@ -40,35 +60,36 @@ public class CanvasContainer : MonoBehaviour
 
         return Change;
     }
+
+    #endregion
+
+    #region Public
+
+    /// <summary>
+    /// limit the confined object to be inside the boundaray
+    /// </summary>
+    /// <param name="Confined">The Object To Be Confined</param>
+    /// <returns>The Delta Position The Object Is Shifted</returns>
     public Vector2 LimitConfined(RectTransform Confined)
     {
         Vector2 ObjectSize = Confined.rect.size * Confined.localScale;
 
-        Vector2 WindowSize = m_Confiner.rect.size * m_Confiner.localScale;
+        Vector2 WindowSize = m_Boundary.rect.size * m_Boundary.localScale;
 
         return limitConfined(Confined, ObjectSize.GetSize() < WindowSize.GetSize());
     }
+    /// <summary>
+    /// limit the confined object to be inside the boundaray . The Object To Confine Is Bigger Than The Boundary
+    /// </summary>
+    /// <param name="Confined">The Object To Be Confined</param>
+    /// <returns>The Delta Position The Object Is Shifted</returns>
     public Vector2 LimitBigConfined(RectTransform Confined) => limitConfined(Confined, false);
+    /// <summary>
+    /// limit the confined object to be inside the boundaray . The Object To Confine Is Smaller Than the Boundary
+    /// </summary>
+    /// <param name="Confined">The Object To Be Confined</param>
+    /// <returns>The Delta Position The Object Is Shifted</returns>
     public Vector2 LimitSmallConfined(RectTransform Confined) => limitConfined(Confined, true);
 
-    ///// <summary>
-    ///// Adjust The Node To Be Inside The Limit Area
-    ///// </summary>
-    ///// <param name="Node">The Node To Adjust</param>
-    //public void AdjustNode(RectTransform Node)
-    //{
-    //    Vector2 NodeSize = Node.rect.size/2;
-    //    Vector2 min = Node.offsetMin.Abs() + NodeSize;
-    //    Vector2 max = Node.offsetMax.Abs() + NodeSize;
-
-    //    Vector2 size = m_WorkArea.rect.size / 2;
-    //    Vector2 extraMin = min - size;
-    //    Vector2 extraMax = max - size;
-    //    Vector2 extra;
-    //    extra.x = extraMin.x > 0 ? extraMin.x : extraMax.x > 0 ? extraMax.x : 0;
-    //    extra.y = extraMin.y > 0 ? extraMin.y : extraMax.y > 0 ? extraMax.y : 0;
-    //    extra /= 2 * Node.anchoredPosition.GetSign();
-    //    Node.offsetMin -= extra * CanvasScaleFactor;
-    //    Node.offsetMax -= extra * CanvasScaleFactor;
-    //}
+    #endregion
 }

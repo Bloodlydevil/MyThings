@@ -8,11 +8,13 @@ using UnityEngine.EventSystems;
 namespace MyThings.MyCanvas
 {
     /// <summary>
-    /// A Class To Allow Movement Of The Work Area
+    /// A Class To Allow Any Canvas To Be Dragged
     /// </summary>
     public class CanvasDragger : MonoBehaviour, IDragHandler , IPointerDownHandler
     {
-        [Tooltip("The Velocity Limit for The Drag")]
+        #region Members
+
+        [Tooltip("The Velocity Limit for The auto Drag")]
         [SerializeField] private Jug m_Velocity = new Jug(50, 0);
 
 
@@ -20,7 +22,7 @@ namespace MyThings.MyCanvas
         [SerializeField] private AnimationCurve m_Acceleration;
 
 
-        [Tooltip("The Time Required To Reach Max Velocity Of the drag")]
+        [Tooltip("The Time Required To Reach Max Velocity Of the auto drag")]
         [SerializeField] private Jug m_AccelerationTime = new Jug(5, 0);
 
 
@@ -37,21 +39,46 @@ namespace MyThings.MyCanvas
         [Tooltip("The Canvas Scale Factor Used")]
         [field: SerializeField] public float CanvasScaleFactor { get; set; } = 1;
 
-        [Tooltip("The Function Which Adjust The Screen When Dragging ")]
+        [Tooltip("The Function Which Adjust The Canvas When Dragging ")]
         public Func<Vector2> CanvasAdjester { get; set; }
 
-        [Tooltip("The Screen Center (Its Not (0,0))")]
+        [Tooltip("The Screen Center ")]
         [field: SerializeField] public Vector2 ScreenCenter { get; set; }
 
         [Tooltip("The Canvas To Drag")]
         [field: SerializeField] public RectTransform Draggable { get; private set; }
 
+        #endregion
+
+        #region Events
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            DeltaGrabPosition = Draggable.anchoredPosition * CanvasScaleFactor - eventData.position + ScreenCenter;
+        }
+        public void OnDrag(PointerEventData eventData)
+        {
+            if (eventData.button == DragMovementButton)
+            {
+
+                Draggable.anchoredPosition = (eventData.position - ScreenCenter + DeltaGrabPosition) / CanvasScaleFactor;
+
+                CanvasAdjester?.Invoke();
+
+                OnDragging?.Invoke();
+            }
+        }
+
+        #endregion
+
+        #region Public
+
         /// <summary>
-        /// Manual Dragging Of The Canvas Using The Mouse Position
+        /// Auto Dragging Of The Canvas Using The Mouse Position
         /// </summary>
-        /// <param name="MousePoint">The Mouse Position Relative To The Screen Size</param>
+        /// <param name="MousePoint">The Mouse Position Relative To The Screen Center</param>
         /// <returns>Adjustement done While Dragging In The Direction</returns>
-        public Vector2 ManualDrag(Vector3 MousePoint)
+        public Vector2 AutoDrag(Vector3 MousePoint)
         {
             m_Velocity += m_Acceleration.Evaluate(m_AccelerationTime.NormalizedLevel);
 
@@ -76,7 +103,7 @@ namespace MyThings.MyCanvas
         }
 
         /// <summary>
-        /// Stop The Draging Of The Canvas
+        /// Stop The Dragging Of The Canvas
         /// </summary>
         public void StopDrag()
         {
@@ -84,25 +111,7 @@ namespace MyThings.MyCanvas
             m_AccelerationTime.Drain();
         }
 
-        #region Events
-
-        public void OnPointerDown(PointerEventData eventData)
-        {
-            DeltaGrabPosition = Draggable.anchoredPosition* CanvasScaleFactor - eventData.position + ScreenCenter;
-        }
-        public void OnDrag(PointerEventData eventData)
-        {
-            if (eventData.button == DragMovementButton)
-            {
-
-                Draggable.anchoredPosition = (eventData.position - ScreenCenter + DeltaGrabPosition) / CanvasScaleFactor;
-
-                CanvasAdjester?.Invoke();
-
-                OnDragging?.Invoke();
-            }
-        }
-
         #endregion
+
     }
 }
