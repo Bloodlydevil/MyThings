@@ -69,7 +69,7 @@ namespace MyThings.MyCanvas
             {
                 Vector2 Adjust = CanvasAdjester();
 
-                return new Vector2(Adjust.x > 0 ? DragValue.x : 0, Adjust.y > 0 ? DragValue.y : 0);
+                return new Vector2(Adjust.Print().x == 0 ? DragValue.x : 0, Adjust.y == 0 ? DragValue.y : 0);
 
             }
             return Vector2.zero;
