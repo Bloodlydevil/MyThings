@@ -199,5 +199,15 @@ namespace MyThings.Extension
         {
            return Assembly.GetExecutingAssembly().GetTypes().Where(i=>i.IsAssignableFrom(typeof(type))).ToArray();
         }
+        /// <summary>
+        /// Check If A Class Is Child Of Another Class
+        /// </summary>
+        /// <param name="Child">The Child Class</param>
+        /// <param name="parent">The Parent Class</param>
+        /// <returns>Is Child Or Not?</returns>
+        public static bool IsChildClassOf(this Type Child, Type parent)
+        {
+            return parent.IsAssignableFrom(Child);
+        }
     }
 }
