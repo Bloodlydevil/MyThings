@@ -95,6 +95,16 @@ namespace MyThings.Extension
             return ob;
         }
         /// <summary>
+        /// Print The Object
+        /// </summary>
+        /// <param name="ob">The Object TO Print</param>
+        /// <typeparam name="type">The Type Of The Object</typeparam>
+        public static type Print<type>(this type ob,  Color color)
+        {
+            ColoredPrint(ob, color);
+            return ob;
+        }
+        /// <summary>
         /// Print all The Objects
         /// </summary>
         /// <param name="ob">The Object TO Print</param>
