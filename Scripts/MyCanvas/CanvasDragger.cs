@@ -46,7 +46,7 @@ namespace MyThings.MyCanvas
         [field: SerializeField] public Vector2 ScreenCenter { get; set; }
 
         [Tooltip("The Canvas To Drag")]
-        [field: SerializeField] public RectTransform Draggable { get; private set; }
+        [field: SerializeField] public RectTransform Draggable { get; set; }
 
         #endregion
 
