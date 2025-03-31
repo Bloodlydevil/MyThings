@@ -75,7 +75,7 @@ namespace MyThings.MyCanvas
             }
         }
         /// <summary>
-        /// Get The MAx Global Scale Which This Transform Can Get
+        /// Get The Max Global Scale Which This Transform Can Get
         /// </summary>
         /// <returns>The Scale(use Only X)</returns>
         public float GetMaxGlobalScale()

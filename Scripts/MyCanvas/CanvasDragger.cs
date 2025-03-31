@@ -1,5 +1,4 @@
 using MyThings.Data;
-using MyThings.Extension;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,10 +16,8 @@ namespace MyThings.MyCanvas
         [Tooltip("The Velocity Limit for The auto Drag")]
         [SerializeField] private Jug m_Velocity = new Jug(50, 0);
 
-
         [Tooltip("Acceleration That The Auto Drag Should Follow")]
         [SerializeField] private AnimationCurve m_Acceleration;
-
 
         [Tooltip("The Time Required To Reach Max Velocity Of the auto drag")]
         [SerializeField] private Jug m_AccelerationTime = new Jug(5, 0);
@@ -28,10 +25,11 @@ namespace MyThings.MyCanvas
         [Tooltip("Event Is Called When Dragging (Mouse Location Is Send)")]
         public event Action<Vector2> OnDragging;
 
+        [Tooltip("Event Is Called When Dragging Starts")]
         public event Action OnDragStart;
 
+        [Tooltip("Event Is Called When Dragging Ends")]
         public event Action OnDragOver;
-
 
         [Tooltip("The Button To Use For Dragging")]
         [field: SerializeField] public PointerEventData.InputButton DragMovementButton { get; set; } = PointerEventData.InputButton.Right;
@@ -48,7 +46,6 @@ namespace MyThings.MyCanvas
         [Tooltip("The Canvas To Drag")]
         [field: SerializeField] public RectTransform Draggable { get; set; }
 
-
         [Tooltip("Used For Correcting The Exact Position Of Dragging")]
         private Vector2 DeltaGrabPosition;
 
@@ -57,16 +54,6 @@ namespace MyThings.MyCanvas
 
         [Tooltip("once Some External Influe Comes Then This Helps With Countering It")]
         private Vector2 m_DeltaCenter;
-
-
-        #endregion
-
-        #region unity
-
-        public void Awake()
-        {
-            m_DefaultScale = Draggable.lossyScale.x;
-        }
 
         #endregion
 
@@ -99,7 +86,6 @@ namespace MyThings.MyCanvas
         {
             if (eventData.button == DragMovementButton)
             {
-                // here is the thing when node is dragged using auto scroll
 
                 Draggable.anchoredPosition = m_DeltaCenter
                     +((eventData.position - ScreenCenter) * GetMultiplier()+ DeltaGrabPosition) / CanvasScaleFactor;

@@ -11,23 +11,25 @@ namespace MyThings.MyCanvas
     {
         [SerializeField] private CanvasDragger m_BackgroundDragger;
         [SerializeField] private CanvasDragger m_ForegroundDragger;
-        [SerializeField] private RectTransform NoScrollZone;
+        [SerializeField] private RectTransform m_NoScrollZone;
+        [SerializeField] private bool m_AwakeSetUp;
 
         private IJob m_Drag;
 
         private Vector2 m_MousePos;
 
-        private void Start()
+        private void Awake()
         {
+            m_Drag = JobSystem.CreateJob(Drag, true);
+            if (!m_AwakeSetUp)
+                return;
+
             if (m_ForegroundDragger != null)
             {
                 m_ForegroundDragger.OnDragging += ForegroundDragging;
                 m_ForegroundDragger.OnDragOver += ForegroundDraggOver;
             }
-            m_Drag = JobSystem.CreateJob(Drag, true);
-            
         }
-
         private void ForegroundDraggOver()
         {
             m_ForegroundDragger.ReSetCumulative();
@@ -41,7 +43,7 @@ namespace MyThings.MyCanvas
         }
         private void ForegroundDragging(Vector2 MousePos)
         {
-            if (MousePos.IsInsideBox(NoScrollZone.anchoredPosition, NoScrollZone.rect.size))
+            if (MousePos.IsInsideBox(m_NoScrollZone.anchoredPosition, m_NoScrollZone.rect.size))
             {
                 m_Drag.Stop();
                 m_BackgroundDragger.StopDrag();
@@ -52,21 +54,27 @@ namespace MyThings.MyCanvas
                 m_Drag.Start();
             }
         }
-        public void SetData(CanvasDragger foreground, CanvasDragger background)
+        public void SetData(RectTransform NoScrollZone)
+        {
+            m_NoScrollZone = NoScrollZone;
+        }
+        public void SetForeGround(CanvasDragger ForeGround)
         {
             if (m_ForegroundDragger != null)
             {
                 m_ForegroundDragger.OnDragging -= ForegroundDragging;
                 m_ForegroundDragger.OnDragOver -= ForegroundDraggOver;
             }
-            
-            if(m_BackgroundDragger != null) m_BackgroundDragger.StopDrag();
-
-            m_Drag.Stop();
-            m_BackgroundDragger = background;
-            m_ForegroundDragger = foreground;
+            m_ForegroundDragger = ForeGround;
             m_ForegroundDragger.OnDragging += ForegroundDragging;
             m_ForegroundDragger.OnDragOver += ForegroundDraggOver;
+        }
+        public void SetBackgroundData( CanvasDragger background)
+        {
+            if(m_BackgroundDragger != null) m_BackgroundDragger.StopDrag();
+
+            m_Drag?.Stop();
+            m_BackgroundDragger = background;
         }
     }
 }
