@@ -1,4 +1,5 @@
 using MyThings.Extension;
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -13,6 +14,8 @@ public class CanvasContainer : MonoBehaviour
 
     [Tooltip("The Canvas Scale Factor (Needs To Be Set Up For Proper Working)")]
     [field: SerializeField] public float CanvasScaleFactor { get; set; } = 1;
+
+    public event Action OnOverLimit;
 
 
     #region Private
@@ -57,6 +60,9 @@ public class CanvasContainer : MonoBehaviour
         Vector2 Change = ObjectDir.GetSign() * Extra / Scale;
 
         Confined.localPosition -= Change.ToVector3(0);
+
+        if (Change != Vector2.zero)
+            OnOverLimit?.Invoke();
 
         return Change;
     }
