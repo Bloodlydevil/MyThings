@@ -74,5 +74,13 @@ namespace MyThings.MyCanvas
                 OnZoom?.Invoke();
             }
         }
+        /// <summary>
+        /// Get The MAx Global Scale Which This Transform Can Get
+        /// </summary>
+        /// <returns>The Scale(use Only X)</returns>
+        public float GetMaxGlobalScale()
+        {
+            return (transform.lossyScale.x / transform.localScale.x) * m_maxScale;
+        }
     }
 }

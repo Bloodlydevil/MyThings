@@ -1,5 +1,4 @@
 using MyThings.Data;
-using MyThings.Extension;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -25,10 +24,6 @@ namespace MyThings.MyCanvas
         [Tooltip("The Time Required To Reach Max Velocity Of the auto drag")]
         [SerializeField] private Jug m_AccelerationTime = new Jug(5, 0);
 
-
-        [Tooltip("Used For Correcting The Exact Position Of Dragging")]
-        private Vector2 DeltaGrabPosition;
-
         [Tooltip("Event Is Called When Dragging")]
         public event Action OnDragging;
 
@@ -48,20 +43,55 @@ namespace MyThings.MyCanvas
         [Tooltip("The Canvas To Drag")]
         [field: SerializeField] public RectTransform Draggable { get; set; }
 
+
+        [Tooltip("Used For Correcting The Exact Position Of Dragging")]
+        private Vector2 DeltaGrabPosition;
+
+        [Tooltip("The Default Scale Used To Allow For Proper Dragging Even If Scale Is Changed")]
+        private float m_DefaultScale;
+
+        [Tooltip("once Some External Influe Comes Then This Helps With Countering It")]
+        private Vector2 m_DeltaCenter;
+
+
+        #endregion
+
+        #region unity
+
+        public void Awake()
+        {
+            m_DefaultScale = Draggable.lossyScale.x;
+        }
+
+        #endregion
+
+        #region Private
+        /// <summary>
+        /// Get The Multiplier To Use For The Objects
+        /// </summary>
+        /// <returns></returns>
+        private float GetMultiplier()
+        {
+            return (m_DefaultScale / (Draggable.lossyScale.x/Draggable.localScale.x));
+        }
+
         #endregion
 
         #region Events
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            DeltaGrabPosition = Draggable.anchoredPosition * CanvasScaleFactor - eventData.position + ScreenCenter;
+
+            DeltaGrabPosition = Draggable.anchoredPosition * CanvasScaleFactor - (eventData.position - ScreenCenter) * GetMultiplier();
         }
         public void OnDrag(PointerEventData eventData)
         {
             if (eventData.button == DragMovementButton)
             {
+                // here is the thing when node is dragged using auto scroll
 
-                Draggable.anchoredPosition = (eventData.position - ScreenCenter + DeltaGrabPosition) / CanvasScaleFactor;
+                Draggable.anchoredPosition = m_DeltaCenter
+                    +((eventData.position - ScreenCenter) * GetMultiplier()+ DeltaGrabPosition) / CanvasScaleFactor;
 
                 CanvasAdjester?.Invoke();
 
@@ -109,8 +139,25 @@ namespace MyThings.MyCanvas
         {
             m_Velocity.Drain();
             m_AccelerationTime.Drain();
+            m_DeltaCenter = Vector2.zero;
         }
-
+        /// <summary>
+        /// Set The Base Scale Of The Dragger
+        /// </summary>
+        /// <param name="LossyScale">The Scale To Use</param>
+        public void SetBaseScale(float LossyScale)
+        {
+            m_DefaultScale = LossyScale;
+        }
+        /// <summary>
+        /// Change The Location Of The Transform By <paramref name="DeltaLocation"/>
+        /// </summary>
+        /// <param name="DeltaLocation">The Change In The Location</param>
+        public void ChangeLocationBy(Vector2 DeltaLocation)
+        {
+            m_DeltaCenter += DeltaLocation;
+            Draggable.anchoredPosition += DeltaLocation;
+        }
         #endregion
 
     }
