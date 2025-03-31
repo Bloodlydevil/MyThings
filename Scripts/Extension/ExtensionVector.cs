@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Drawing;
+using UnityEngine;
 
 namespace MyThings.Extension
 {
@@ -43,6 +44,19 @@ namespace MyThings.Extension
         public static bool IsInsideBox(this Vector2 point,Vector2 size)
         {
             return !(Mathf.Abs(point.x) > size.x || Mathf.Abs(point.y) > size.y);
+        }
+        /// <summary>
+        /// Is The Point In Side The Box
+        /// </summary>
+        /// <param name="point">The Point To Check</param>
+        /// <param name="BoxCenter">The Box Center</param>
+        /// <param name="BoxSize">The Box Size</param>
+        /// <returns>If It IS Inside</returns>
+        public static bool IsInsideBox(this Vector2 point,Vector2 BoxCenter,Vector2 BoxSize)
+        {
+            Vector2 relativeDis= point-BoxCenter;
+            BoxSize /= 2;
+            return !(Mathf.Abs(relativeDis.x) > BoxSize.x || Mathf.Abs(relativeDis.y) > BoxSize.y);
         }
         /// <summary>
         /// Is The Vector Grater Than The Other Grater (does A Basic Check For The Value)

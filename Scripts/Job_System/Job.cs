@@ -21,12 +21,12 @@ namespace MyThings.Job_System
             /// Constructor To Create A Job
             /// </summary>
             /// <param name="action">The Function To Call The Job</param>
-            /// <param name="Time">If THe Time IS Scaled Or Not</param>
+            /// <param name="timeScaled">If THe Time IS Scaled Or Not</param>
             /// <param name="FixedUpdate">If We Should Used Fixed Update Or Nots</param>
-            public Job(Action<float> action, bool Time, bool FixedUpdate = false)
+            public Job(Action<float> action, bool timeScaled, bool FixedUpdate = false)
             {
                 ToPerForm = action;
-                TimeScaled = Time;
+                TimeScaled = timeScaled;
                 m_JobPerforming = false;
                 m_FixedUpdate = FixedUpdate;
             }

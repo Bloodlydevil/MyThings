@@ -58,13 +58,13 @@ namespace MyThings.Job_System
         /// </summary>
         /// <param name="action">The Function To Call Every Frame</param>
         /// <returns>The Job</returns>
-        public static IJob CreateJob(Action<float> action, bool Time)
+        public static IJob CreateJob(Action<float> action, bool timeScaled)
         {
-            return new Job(action, Time);
+            return new Job(action, timeScaled);
         }
-        public static IJob CreateJob(Func<float, bool> action, bool Time)
+        public static IJob CreateJob(Func<float, bool> action, bool timeScaled)
         {
-            return new JobCondition(action, Time);
+            return new JobCondition(action, timeScaled);
         }
 
 

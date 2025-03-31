@@ -1,4 +1,5 @@
 using MyThings.Data;
+using MyThings.Extension;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -9,7 +10,7 @@ namespace MyThings.MyCanvas
     /// <summary>
     /// A Class To Allow Any Canvas To Be Dragged
     /// </summary>
-    public class CanvasDragger : MonoBehaviour, IDragHandler , IPointerDownHandler
+    public class CanvasDragger : MonoBehaviour, IDragHandler , IPointerDownHandler ,IBeginDragHandler ,IEndDragHandler
     {
         #region Members
 
@@ -24,8 +25,12 @@ namespace MyThings.MyCanvas
         [Tooltip("The Time Required To Reach Max Velocity Of the auto drag")]
         [SerializeField] private Jug m_AccelerationTime = new Jug(5, 0);
 
-        [Tooltip("Event Is Called When Dragging")]
-        public event Action OnDragging;
+        [Tooltip("Event Is Called When Dragging (Mouse Location Is Send)")]
+        public event Action<Vector2> OnDragging;
+
+        public event Action OnDragStart;
+
+        public event Action OnDragOver;
 
 
         [Tooltip("The Button To Use For Dragging")]
@@ -84,6 +89,12 @@ namespace MyThings.MyCanvas
 
             DeltaGrabPosition = Draggable.anchoredPosition * CanvasScaleFactor - (eventData.position - ScreenCenter) * GetMultiplier();
         }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            OnDragStart?.Invoke();
+        }
+
         public void OnDrag(PointerEventData eventData)
         {
             if (eventData.button == DragMovementButton)
@@ -95,10 +106,13 @@ namespace MyThings.MyCanvas
 
                 CanvasAdjester?.Invoke();
 
-                OnDragging?.Invoke();
+                OnDragging?.Invoke(eventData.position- ScreenCenter);
             }
         }
-
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            OnDragOver?.Invoke();
+        }
         #endregion
 
         #region Public
@@ -118,7 +132,7 @@ namespace MyThings.MyCanvas
 
             Draggable.localPosition -= DragValue;
 
-            OnDragging?.Invoke();
+            OnDragging?.Invoke(MousePoint);
             // dragging Done
 
             // Since It Is Manual Dragging So Return The Amount Adjested
@@ -139,6 +153,10 @@ namespace MyThings.MyCanvas
         {
             m_Velocity.Drain();
             m_AccelerationTime.Drain();
+            
+        }
+        public void ReSetCumulative()
+        {
             m_DeltaCenter = Vector2.zero;
         }
         /// <summary>
