@@ -1,4 +1,5 @@
 using MyThings.Data;
+using MyThings.Extension;
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -159,8 +160,8 @@ namespace MyThings.MyCanvas
         /// <param name="DeltaLocation">The Change In The Location</param>
         public void ChangeLocationBy(Vector2 DeltaLocation)
         {
-            m_DeltaCenter += DeltaLocation;
-            Draggable.anchoredPosition += DeltaLocation;
+            m_DeltaCenter += DeltaLocation* GetMultiplier();
+            Draggable.anchoredPosition += DeltaLocation* GetMultiplier();
         }
         #endregion
 

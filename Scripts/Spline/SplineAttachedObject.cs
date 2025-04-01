@@ -23,11 +23,11 @@ namespace MyThings.Spline
         }
         private void FixedUpdate()
         {
-            if(!InFixedUpdate) UpdateAttacher();
+            if(InFixedUpdate) UpdateAttacher();
         }
         private void LateUpdate()
         {
-            if(!InLateUpdate) UpdateAttacher();
+            if(InLateUpdate) UpdateAttacher();
         }
         /// <summary>
         /// Update The Attachers

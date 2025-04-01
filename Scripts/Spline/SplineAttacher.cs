@@ -1,3 +1,4 @@
+using MyThings.Extension;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
@@ -19,20 +20,23 @@ namespace MyThings.Spline
         /// <summary>
         ///  Cahnge The Spline To Follow The Object
         /// </summary>
-        /// <param name="currentPosition">The Position Of The Object</param>
-        public void Change(SplineAttachedObject currentPosition)
+        /// <param name="attachedObject">The Position Of The Object</param>
+        public void Change(SplineAttachedObject attachedObject)
         {
-            if (m_Knot.TryGetValue(currentPosition, out var knotIndex))
+            if (m_Knot.TryGetValue(attachedObject, out var knotIndex))
             {
+                //attachedObject.Print(Color.green);
                 var spline = m_SplineContainer.Spline;
                 var knot = spline[knotIndex];
-                var attachedTransform = currentPosition.transform;
-                knot.Position = attachedTransform.position * attachedTransform.localScale.x / attachedTransform.lossyScale.x+ m_DeltaLocation;
+                var attachedTransform = attachedObject.transform;
+                knot.Position = attachedTransform.position *
+                    attachedTransform.localScale.x / attachedTransform.lossyScale.x
+                    + m_DeltaLocation;
                 spline[knotIndex] = knot;
             }
             else
             {
-                Debug.LogWarning(currentPosition.gameObject + " Did Not Join Using Add Firstly");
+                Debug.LogWarning(attachedObject.gameObject + " Did Not Join Using Add Firstly");
             }
         }
         /// <summary>
@@ -73,8 +77,6 @@ namespace MyThings.Spline
         }
         public void SetSplineContainer(SplineContainer container)
         {
-            if (m_SplineContainer != null)
-                Destroy(m_SplineContainer);
             m_SplineContainer= container;
         }
     }

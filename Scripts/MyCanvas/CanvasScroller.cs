@@ -33,6 +33,7 @@ namespace MyThings.MyCanvas
         private void ForegroundDraggOver()
         {
             m_ForegroundDragger.ReSetCumulative();
+            m_Drag?.Stop();
         }
 
         private void Drag(float _)
