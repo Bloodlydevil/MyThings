@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace MyThings.Spline
 {
@@ -7,7 +8,7 @@ namespace MyThings.Spline
     /// A Spline Class To Use For Moving The Spline With The Object
     /// Use This With The Object Which Can Move
     /// </summary>
-    public class SplineAttachedObject : MonoBehaviour
+    public class SplineAttachedObject : MonoBehaviour ,IDragHandler
     {
         /// <summary>If The Object Location Be Taken And Updated In Update</summary>
         [field: SerializeField] public bool InUpdate { get; set; } = false;
@@ -15,6 +16,10 @@ namespace MyThings.Spline
         [field: SerializeField] public bool InFixedUpdate { get; set; } = false;
         /// <summary>If The Object Location Be Taken And Updated In LateUpdate</summary>
         [field: SerializeField] public bool InLateUpdate { get; set; } = false;
+
+        [field:SerializeField] public bool InDrag { get; set; } = false;
+
+        [field:SerializeField] public Transform SplineTransform { get; set; }
 
         [SerializeField] private List<SplineAttacher> m_splineFollowers = new List<SplineAttacher>();
         private void Update()
@@ -32,10 +37,14 @@ namespace MyThings.Spline
         /// <summary>
         /// Update The Attachers
         /// </summary>
-        private void UpdateAttacher()
+        public void UpdateAttacher()
         {
             for (int i = 0; i < m_splineFollowers.Count; i++)
-                m_splineFollowers[i].Change(this);
+                m_splineFollowers[i].Change(SplineTransform);
+        }
+        public void OnDrag(PointerEventData eventData)
+        {
+            if(InDrag) UpdateAttacher();
         }
         /// <summary>
         /// The Attached Object Must Be Folled By
@@ -53,5 +62,13 @@ namespace MyThings.Spline
         {
             m_splineFollowers.Remove(splineFollower);
         }
+        public void AddToDeltaLocation(Vector3 ExtraDis)
+        {
+            for (int i = 0; i < m_splineFollowers.Count; i++)
+            {
+                m_splineFollowers[i].DeltaLocation += ExtraDis;
+            }
+        }
+
     }
 }

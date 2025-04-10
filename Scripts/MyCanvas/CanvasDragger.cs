@@ -23,6 +23,12 @@ namespace MyThings.MyCanvas
         [Tooltip("The Time Required To Reach Max Velocity Of the auto drag")]
         [SerializeField] private Jug m_AccelerationTime = new Jug(5, 0);
 
+        [Tooltip("The Default Scale Used To Allow For Proper Dragging Even If Scale Is Changed")]
+        private float m_DefaultScale;
+
+        [Tooltip("once Some External Influe Comes Then This Helps With Countering It")]
+        private Vector2 m_DeltaCenter;
+
         [Tooltip("Event Is Called When Dragging (Mouse Location Is Send)")]
         public event Action<Vector2> OnDragging;
 
@@ -48,13 +54,7 @@ namespace MyThings.MyCanvas
         [field: SerializeField] public RectTransform Draggable { get; set; }
 
         [Tooltip("Used For Correcting The Exact Position Of Dragging")]
-        private Vector2 DeltaGrabPosition;
-
-        [Tooltip("The Default Scale Used To Allow For Proper Dragging Even If Scale Is Changed")]
-        private float m_DefaultScale;
-
-        [Tooltip("once Some External Influe Comes Then This Helps With Countering It")]
-        private Vector2 m_DeltaCenter;
+        public Vector2 DeltaGrabPosition { get; set; }
 
         #endregion
 
@@ -65,7 +65,7 @@ namespace MyThings.MyCanvas
         /// <returns></returns>
         private float GetMultiplier()
         {
-            return (m_DefaultScale / (Draggable.lossyScale.x/Draggable.localScale.x));
+            return (m_DefaultScale / (Draggable.lossyScale.x / Draggable.localScale.x));
         }
 
         #endregion
@@ -74,8 +74,7 @@ namespace MyThings.MyCanvas
 
         public void OnPointerDown(PointerEventData eventData)
         {
-
-            DeltaGrabPosition = Draggable.anchoredPosition * CanvasScaleFactor - (eventData.position - ScreenCenter) * GetMultiplier();
+            SetGrabPostion(eventData.position);
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -87,9 +86,14 @@ namespace MyThings.MyCanvas
         {
             if (eventData.button == DragMovementButton)
             {
+                // This Will Not Work If Draggable Object Is A Local of Another Object And That Moves
+
+                // Maybe The Problem Will Solve Itself if i Set DeltaCener to Be Node Location
+
+                // DeltaGrab Position Also Helps With A Local Objects Positioning Correction
 
                 Draggable.anchoredPosition = m_DeltaCenter
-                    +((eventData.position - ScreenCenter) * GetMultiplier()+ DeltaGrabPosition) / CanvasScaleFactor;
+                    +((eventData.position - ScreenCenter)* GetMultiplier()+ DeltaGrabPosition) / CanvasScaleFactor;
 
                 CanvasAdjester?.Invoke();
 
@@ -103,6 +107,11 @@ namespace MyThings.MyCanvas
         #endregion
 
         #region Public
+
+        public void SetGrabPostion(Vector2 position)
+        {
+            DeltaGrabPosition = Draggable.anchoredPosition * CanvasScaleFactor - (position - ScreenCenter) * GetMultiplier();
+        }
 
         /// <summary>
         /// Auto Dragging Of The Canvas Using The Mouse Position
@@ -161,7 +170,7 @@ namespace MyThings.MyCanvas
         public void ChangeLocationBy(Vector2 DeltaLocation)
         {
             m_DeltaCenter += DeltaLocation* GetMultiplier();
-            Draggable.anchoredPosition += DeltaLocation* GetMultiplier();
+            Draggable.localPosition +=(Vector3) DeltaLocation* GetMultiplier();
         }
         #endregion
 

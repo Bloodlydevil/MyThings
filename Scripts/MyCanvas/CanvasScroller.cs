@@ -18,6 +18,8 @@ namespace MyThings.MyCanvas
 
         private Vector2 m_MousePos;
 
+        [field: SerializeField] public bool CorrectionOnAutoChange { get; set; } = true;
+
         private void Awake()
         {
             m_Drag = JobSystem.CreateJob(Drag, true);
@@ -38,9 +40,11 @@ namespace MyThings.MyCanvas
 
         private void Drag(float _)
         {
-            var Correction=m_BackgroundDragger.AutoDrag(m_MousePos);
+            var Correction = m_BackgroundDragger.AutoDrag(m_MousePos);
 
-            m_ForegroundDragger.ChangeLocationBy(Correction);
+            if (CorrectionOnAutoChange)
+
+                m_ForegroundDragger.ChangeLocationBy(Correction);
         }
         private void ForegroundDragging(Vector2 MousePos)
         {
