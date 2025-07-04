@@ -19,9 +19,12 @@ namespace MyThings.Data
         public void AddEvent(string eventName)=> AddEvent(eventName, new Progress(1)); // Default progress of 1 for new events
         public void AddEvent(string eventName, Progress progress)
         {
-            progress.OnProgressCompleted += () => CompleteEvent(eventName); // Subscribe to event completion
             if (string.IsNullOrEmpty(eventName)) return;
-            if (!m_EventProgress.ContainsKey(eventName) || m_EventCompleted.Contains(eventName)) return;
+            if (m_EventProgress.ContainsKey(eventName) || m_EventCompleted.Contains(eventName)) return;
+
+            Debug.Log($"Adding event '{eventName}' with initial progress {progress.ProgressValue}");
+
+            progress.OnProgressCompleted += () => CompleteEvent(eventName); // Subscribe to event completion
             m_EventProgress.Add(eventName, progress);
         }
 

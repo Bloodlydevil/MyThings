@@ -22,6 +22,7 @@ namespace MyThings.Internet
         public bool Connected { get; private set; }
 
         public event Action OnInternetConnected;
+        public event Action<bool> OnInternetPing;
         public event Action OnInternetDisConnected;
         private void Start()
         {
@@ -36,13 +37,15 @@ namespace MyThings.Internet
             {
                 if (!Connected)
                     OnInternetConnected?.Invoke();
+                OnInternetPing?.Invoke(true);
                 Connected = true;
             }
             else
             {
                 if(Connected)
                     OnInternetDisConnected?.Invoke();
-                Connected= false;
+                OnInternetPing?.Invoke(false);
+                Connected = false;
             }
             scheduler.Schedule(() => StartCoroutine(CheckInternetConnection(url)));
         }

@@ -45,4 +45,10 @@ public class Progress
             OnProgressCompleted?.Invoke(); // Notify subscribers that progress is complete
         }
     }
+    public void ResetEvents()
+    {
+        OnProgressUpdated = null; // Reset the event to null
+        OnProgressCompleted = null; // Reset the event to null
+        OnProgressStarted = null; // Reset the event to null
+    }
 }

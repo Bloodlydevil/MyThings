@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace MyThings.Timer
 {
     /// <summary>
     /// Performs Task When It Is Free
     /// </summary>
+    [Serializable]
     public class Scheduler
     {
-        private ITimer m_timer;
+        [SerializeReference] private ITimer m_timer;
         public bool Override;
         public Queue<Action> Tasks=new Queue<Action>();
 
