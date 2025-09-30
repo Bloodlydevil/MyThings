@@ -12,6 +12,10 @@ namespace MyThings.Timer
         /// </summary>
         private int m_Max;
         /// <summary>
+        /// The Max Time Copy (Used For Reset)
+        /// </summary>
+        private int m_MaxCopy;
+        /// <summary>
         /// the function to call after each sec
         /// </summary>
         private Action<int> m_Function;
@@ -29,6 +33,7 @@ namespace MyThings.Timer
         public TimerCountdown(int max, Action<int> Function, Action End, bool Scaled)
         {
             m_Max = max;
+            m_MaxCopy = max;
             m_Function = Function;
             _Repeat = Repeat;
             _MaxTimer = 1;
@@ -53,6 +58,7 @@ namespace MyThings.Timer
                 else
                 {
                     _Timer = 0;
+                    m_Max = m_MaxCopy;
                     OnEnd();
                     return true;
                 }
