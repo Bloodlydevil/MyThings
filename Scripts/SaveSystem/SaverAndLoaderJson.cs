@@ -11,6 +11,12 @@ namespace MyThings.SaveSystem
 {
     public static class SaverAndLoaderJson
     {
+        private static readonly JsonSerializerSettings Settings = new()
+        {
+            TypeNameHandling = TypeNameHandling.Auto
+        };
+
+
         /// <summary>
         /// Save The Data on The Path
         /// </summary>
@@ -20,12 +26,12 @@ namespace MyThings.SaveSystem
         {
             path = Application.persistentDataPath + "/" + path;
             path.CreateDirectoryIfNot();
-            File.WriteAllText(path,JsonConvert.SerializeObject(obj));
+            File.WriteAllText(path,JsonConvert.SerializeObject(obj, Settings));
         }
         public static void SaveDataCompleteJson(this object obj, string CompletePath)
         {
             CompletePath.CreateDirectoryIfNot();
-            File.WriteAllText(CompletePath, JsonConvert.SerializeObject(obj));
+            File.WriteAllText(CompletePath, JsonConvert.SerializeObject(obj, Settings));
         }
         /// <summary>
         /// Load The Json Data Present At The Path
@@ -41,7 +47,7 @@ namespace MyThings.SaveSystem
                 string data = File.ReadAllText(newpath);
                 try
                 {
-                    return new LoadedData<type>(JsonConvert.DeserializeObject<type>(data), false, path);
+                    return new LoadedData<type>(JsonConvert.DeserializeObject<type>(data, Settings), false, path);
                 }
                 catch(Exception e){
                     Debug.LogException(e);
@@ -58,7 +64,7 @@ namespace MyThings.SaveSystem
                 string data = File.ReadAllText(CompletePath);
                 try
                 {
-                    return new LoadedData<type>(JsonConvert.DeserializeObject<type>(data), false, CompletePath);
+                    return new LoadedData<type>(JsonConvert.DeserializeObject<type>(data, Settings), false, CompletePath);
                 }
                 catch (Exception e)
                 {
