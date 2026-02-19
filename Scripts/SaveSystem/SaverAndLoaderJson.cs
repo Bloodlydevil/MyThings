@@ -47,7 +47,11 @@ namespace MyThings.SaveSystem
                 string data = File.ReadAllText(newpath);
                 try
                 {
-                    return new LoadedData<type>(JsonConvert.DeserializeObject<type>(data, Settings), false, path);
+
+                    object obj = JsonConvert.DeserializeObject(data, Settings);
+
+                    return new LoadedData<type>(obj, false, path);
+                    //return new LoadedData<type>(JsonConvert.DeserializeObject<type>(data, Settings), false, path);
                 }
                 catch(Exception e){
                     Debug.LogException(e);
@@ -64,7 +68,10 @@ namespace MyThings.SaveSystem
                 string data = File.ReadAllText(CompletePath);
                 try
                 {
-                    return new LoadedData<type>(JsonConvert.DeserializeObject<type>(data, Settings), false, CompletePath);
+                    object obj = JsonConvert.DeserializeObject(data, Settings);
+
+                    return new LoadedData<type>(obj, false, CompletePath);
+                    //return new LoadedData<type>(JsonConvert.DeserializeObject<type>(data, Settings), false, CompletePath);
                 }
                 catch (Exception e)
                 {
