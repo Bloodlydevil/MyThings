@@ -91,6 +91,7 @@ namespace MyThings.MyCanvas
 
                 // DeltaGrab Position Also Helps With A Local Objects Positioning Correction
 
+
                 Draggable.anchoredPosition = m_DeltaCenter
                     +((eventData.position - ScreenCenter)* GetMultiplier()+ DeltaGrabPosition) / CanvasScaleFactor;
 

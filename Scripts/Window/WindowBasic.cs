@@ -34,14 +34,14 @@ namespace MyThings.Window
             }
             Camera_C.Instance.OnCameraChanged += SetCamera;
             Camera_C.OnCameraFirstAcquired += SetCamera;
-            CursorLock.Unlock();
+            CursorLock.SetCursorLockMode(false,true);
             m_CloseButton.onClick.AddListener(() => Destroy(gameObject));
             ProperDrag.Attach(m_Window, mode).AddNoDragRegion(m_RightEmpty);
 
         }
         private void OnDestroy()
         {
-            Camera_C.Instance.IfTrue(i => i.OnCameraChanged -= SetCamera);
+            Camera_C.Instance.IfNotNull(i => i.OnCameraChanged -= SetCamera);
             Camera_C.OnCameraFirstAcquired -= SetCamera;
             CursorLock.RevertBack();
             OnWindowClose?.Invoke();

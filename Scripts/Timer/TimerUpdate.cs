@@ -123,8 +123,7 @@ namespace MyThings.Timer
                 return;
             if (End) OnEnd();
             _Running = false;
-            if (TimerManager.Instance != null)
-                TimerManager.Instance.AddToDelete(this);
+            TimerManager.IfInstanceExist(i=>i.AddToDelete(this));
             RemoveConnectedTimerUL();
         }
         public void Reset(float Time, Action action, bool Scaled = true, bool Repeat = false)

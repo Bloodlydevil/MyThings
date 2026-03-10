@@ -1,4 +1,5 @@
 using MyThings.Extension;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -51,6 +52,12 @@ namespace MyThings.ExtendableClass
         {
             instance = _instance;
             return HasInstance;
+        }
+        public static type IfInstanceExist(Action<type> PerformOnTrue)
+        {
+            if (_instance != null)
+                PerformOnTrue(_instance);
+            return _instance;
         }
     }
 }

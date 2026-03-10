@@ -168,6 +168,17 @@ namespace MyThings.Data
         {
             CalculateCapacity();
         }
+        /// <summary>
+        /// Calculates the scaled level within the specified range.
+        /// </summary>
+        /// <param name="min">The minimum value of the range.</param>
+        /// <param name="max">The maximum value of the range.</param>
+        /// <returns>A floating-point value representing the level scaled to the range defined by <paramref name="min"/> and
+        /// <paramref name="max"/>.</returns>
+        public float GetLevel(float min,float max)
+        {
+            return NormalizedLevel * (max - min) + min;
+        }
         #region operators
         public static Jug operator ++(Jug item) => item.AddWater(1);
         public static Jug operator --(Jug item) => item.AddWater(-1);

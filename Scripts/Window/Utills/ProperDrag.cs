@@ -26,7 +26,7 @@ namespace MyThings.Window.Utills
 
         private void OnDestroy()
         {
-            Camera_C.Instance.IfTrue(i => i.OnCameraChanged -= SetCamera);
+            Camera_C.IfInstanceExist(i => i.OnCameraChanged -= SetCamera);
             Camera_C.OnCameraFirstAcquired -= SetCamera;
         }
 

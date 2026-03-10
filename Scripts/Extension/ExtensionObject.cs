@@ -91,7 +91,7 @@ namespace MyThings.Extension
         /// <typeparam name="type">The Type Of The Object</typeparam>
         public static type Print<type>(this type ob,string add=null, Color? color = null)
         {
-            ColoredPrint(ob + add, color);
+            ColoredPrint(add+ob, color);
             return ob;
         }
         /// <summary>
@@ -111,9 +111,18 @@ namespace MyThings.Extension
         /// <typeparam name="type">The Type Of The Object</typeparam>
         public static type[] PrintA<type>(this type[] ob, string add = null, Color? color = null)
         {
-            foreach(type a in ob)
+            for (int i = 0; i < ob.Length; i++)
             {
-                Print(a, add, color);
+                Print(ob[i], $"{add} {i} => ", color);
+            }
+            return ob;
+        }
+        public static type[] PrintA<type>(this type[] ob, Action<type> ForEach,string add=null,Color? color=null)
+        {
+            for (int i = 0; i < ob.Length; i++)
+            {
+                ForEach?.Invoke(ob[i]);
+                Print(ob[i], $"{add} {i} => ", color);
             }
             return ob;
         }

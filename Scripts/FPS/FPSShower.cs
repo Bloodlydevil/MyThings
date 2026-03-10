@@ -12,6 +12,8 @@ namespace MyThings.FPS
         [SerializeField] private float RefreshRate;
         [SerializeField] private bool m_enabled;
         [SerializeField] private bool m_DontDestroyOnLoad;
+
+        private ITimer m_timer;
         private void Start()
         {
             if (!m_enabled)
@@ -21,7 +23,12 @@ namespace MyThings.FPS
             }
             if(m_DontDestroyOnLoad)
                 DontDestroyOnLoad(gameObject);
-            TimerManager.Create(RefreshRate, () => m_text.text= FPS.FPS_string, true).Start();
+            m_timer=TimerManager.Create(RefreshRate, () => m_text.text= FPS.FPS_string, true);
+            m_timer.Start();
+        }
+        private void OnDestroy()
+        {
+            m_timer.Stop();
         }
     }
 }

@@ -11,6 +11,7 @@ namespace MyThings.Scene
     /// </summary>
     public class Scene
     {
+
         private const float ProgressEnd = 0.9f;
 
         [SerializeField]
@@ -25,6 +26,19 @@ namespace MyThings.Scene
 
         public bool IsLoaded { get; private set; }
         public int SceneId => m_SceneId;
+        public string SceneName {  
+            get {
+                try
+                {
+                    m_SceneName = SceneManager.GetSceneByBuildIndex(SceneId).name;
+                }
+                catch
+                {
+                    Debug.LogWarning("Cant Acces Build Name");
+                }
+                return m_SceneName;
+            } 
+        }
         public bool IsLoadingAsync => m_AsyncOperation != null;
 
         /// <summary>
@@ -34,6 +48,14 @@ namespace MyThings.Scene
         public Scene(int SceneId)
         {
             this.m_SceneId = SceneId;
+            try
+            {
+                this.m_SceneName = SceneManager.GetSceneByBuildIndex(SceneId).name;
+            }
+            catch
+            {
+                Debug.LogWarning("Cant Set Scene Name From This Iniializer");
+            }
         }
         public Scene(int SceneId, string SceneName) : this(SceneId)
         {
@@ -74,6 +96,7 @@ namespace MyThings.Scene
         {
             IsLoaded = false;
             m_AsyncOperation.allowSceneActivation = Activation;
+            
             m_LoadRoutine = SceneLoader.Instance.StartCoroutine(Load(CallbackProgress, CallbackLoaded, CallbackEnd));
         }
 
