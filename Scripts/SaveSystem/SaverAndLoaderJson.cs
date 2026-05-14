@@ -61,7 +61,7 @@ namespace MyThings.SaveSystem
             return new LoadedData<type>(default, true, path);
             
         }
-        public static LoadedData<type> LoadDataJsonPrePath<type>(this string CompletePath)
+        public static LoadedData<type> LoadDataJsonCompletePath<type>(this string CompletePath)
         {
             if (File.Exists(CompletePath))
             {

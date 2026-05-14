@@ -30,12 +30,12 @@ namespace MyThings.Events
         /// <summary>
         /// Call the event (This Function Has No Way Of Knowing How To Call The Function Type so User Has To Provide(The Delegate Can Have Values TO Be Input))
         /// </summary>
-        /// <param name="temp"> call now but with check for it can be null</param>
+        /// <param name="Now"> call now but with check for it can be null</param>
         /// <param name="ForFuture">call way in future (no checks needed)</param>
-        public void Call(EventCaller temp, EventCaller ForFuture)
+        public void Call(EventCaller Now, EventCaller ForFuture)
         {
             m_Call = true;
-            temp(m_OnCall);
+            Now(m_OnCall);
             m_OnCall = null;
             m_Caller = ForFuture;
         }

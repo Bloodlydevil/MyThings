@@ -32,24 +32,24 @@ namespace MyThings.SaveSystem
         /// <summary>
         /// Load Data From The File--> Data Must Be Stored In Binary
         /// </summary>
-        /// <param name="CompletePath">The File </param>
+        /// <param name="FilePath">The File </param>
         /// <typeparam name="type">The Type Of Object To Return</typeparam>
         /// <returns>The Data</returns>
-        public static LoadedData<type> LoadDataBinary<type>(this string CompletePath)
+        public static LoadedData<type> LoadDataBinary<type>(this string FilePath)
         {
-            var newpath = Application.persistentDataPath + "/" + CompletePath;
+            var newpath = Application.persistentDataPath + "/" + FilePath;
             if (File.Exists(newpath))
             {
                 BinaryFormatter formatter = new BinaryFormatter();
                 FileStream stream = new FileStream(newpath, FileMode.Open);
-                LoadedData<type> obj = new LoadedData<type>(formatter.Deserialize(stream), false, CompletePath);
+                LoadedData<type> obj = new LoadedData<type>(formatter.Deserialize(stream), false, FilePath);
                 stream.Close();
                 return obj;
             }
-            return new LoadedData<type>(default, true, CompletePath);
+            return new LoadedData<type>(default, true, FilePath);
 
         }
-        public static LoadedData<type> LoadDataBinaryPrePath<type>(this string CompletePath)
+        public static LoadedData<type> LoadDataBinaryCompletePath<type>(this string CompletePath)
         {
             if (File.Exists(CompletePath))
             {

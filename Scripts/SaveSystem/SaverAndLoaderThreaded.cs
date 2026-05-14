@@ -46,7 +46,7 @@ namespace MyThings.SaveSystem
             path = SaverAndLoader.GetThreadSafePath(path);
 
             AsyncHandler.Instance.RunTask(
-                taskFunc: () => Task.Run(() => path.LoadAsyncData<T>(type)),
+                taskFunc: () => Task.Run(() => path.LoadDataCompletePath<T>(type)),
                 onResult: onResult,
                 onError: onError
             );

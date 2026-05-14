@@ -82,12 +82,12 @@ namespace MyThings.SaveSystem
         /// <param name="CompletePath">The Complete Path Of The Data</param>
         /// <param name="saveType"></param>
         /// <returns></returns>
-        public static LoadedData<type> LoadAsyncData<type>(this string CompletePath, SaveType saveType)
+        public static LoadedData<type> LoadDataCompletePath<type>(this string CompletePath, SaveType saveType)
         {
             return saveType switch
             {
-                SaveType.Binary => SaverAndLoaderBinary.LoadDataBinaryPrePath<type>(CompletePath),
-                SaveType.JSON => SaverAndLoaderJson.LoadDataJsonPrePath<type>(CompletePath),
+                SaveType.Binary => SaverAndLoaderBinary.LoadDataBinaryCompletePath<type>(CompletePath),
+                SaveType.JSON => SaverAndLoaderJson.LoadDataJsonCompletePath<type>(CompletePath),
                 _ => default
             };
         }
